@@ -660,7 +660,7 @@ function renderInquiry(inquiry) {
 
 function renderFooter(navigation) {
     const productTiles = siteDataset.products.slice(0, 6).map((product) => `<a class="site-footer__product" href="products.html"><img src="${product.imageSrc}" alt="${product.name}"><span>${product.name}</span></a>`).join("");
-    const footerLinks = navigation.map((item) => `<a href="${item.href}">${item.label}</a>`).join("");
+    const footerLinks = navigation.map((item) => `<a class="site-footer__link" href="${item.href}">${item.label}</a>`).join("");
 
     return `
         <footer class="site-footer">
@@ -699,13 +699,16 @@ function renderFooter(navigation) {
                         <li><strong>Email:</strong> <a href="mailto:${siteDataset.topBar.email}">${siteDataset.topBar.email}</a></li>
                         <li><strong>Fax:</strong> 086 599 5269</li>
                     </ul>
-                    <nav class="site-footer__nav" aria-label="Footer navigation">${footerLinks}<a href="proposal/">Proposal</a><a href="admin.html">Admin Login</a></nav>
                 </section>
+            </div>
+
+            <div class="container">
+                <nav class="site-footer__nav" aria-label="Footer navigation">${footerLinks}<a class="site-footer__link" href="proposal/">Proposal</a><a class="site-footer__link" href="admin.html">Admin Login</a></nav>
             </div>
 
             <div class="site-footer__bottom">
                 <div class="container site-footer__bottom-inner">
-                    <p>© Copyright PN Medical (Reg# 2007/031947/07). Designed by Linchpin-PM.</p>
+                    <p class="site-footer__credit">© Copyright PN Medical (Reg# 2007/031947/07). CMS designed and developed by <img src="logos/Colourpix%20Logo.png" alt="Colourpix Web Development" class="site-footer__credit-logo"> Colourpix Web Development.</p>
                     <a href="https://www.facebook.com/sanihandssa/" target="_blank" rel="noopener noreferrer" aria-label="PN Medical Facebook">f</a>
                 </div>
             </div>
