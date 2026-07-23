@@ -763,7 +763,7 @@ body[data-page="contact"] {
 .site-footer__nav a { color: var(--crimson-red); font-weight: 700; }
 
 .preview-link span {
-    color: rgba(255, 255, 255, 0.92);
+    color: rgba(71, 85, 105, 0.96);
     font-weight: 700;
 }
 
@@ -775,13 +775,32 @@ body[data-page="contact"] {
 
 .preview-link {
     padding: 1.6rem;
-    background: linear-gradient(145deg, rgba(31, 36, 48, 0.95), rgba(207, 39, 31, 0.9));
-    color: var(--white);
+    background: linear-gradient(180deg, rgba(248, 250, 252, 0.98), rgba(241, 245, 249, 0.98));
+    color: var(--charcoal-slate);
     display: grid;
     gap: 0.6rem;
+    border: 1px dashed rgba(148, 163, 184, 0.55);
+    box-shadow: var(--shadow-soft);
 }
 
 .preview-link strong { font-size: 1.25rem; }
+
+.preview-link__badge {
+    display: inline-flex;
+    width: fit-content;
+    padding: 0.35rem 0.55rem;
+    border-radius: 999px;
+    background: rgba(2, 132, 199, 0.1);
+    color: var(--sky-blue);
+    font-size: 0.72rem;
+    font-weight: 800;
+    letter-spacing: 0.08em;
+    text-transform: uppercase;
+}
+
+.preview-link--placeholder strong {
+    font-family: "Space Grotesk", sans-serif;
+}
 
 .summary-panel,
 .callout-panel {
