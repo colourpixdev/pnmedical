@@ -699,7 +699,7 @@ function renderFooter(navigation) {
                         <li><strong>Email:</strong> <a href="mailto:${siteDataset.topBar.email}">${siteDataset.topBar.email}</a></li>
                         <li><strong>Fax:</strong> 086 599 5269</li>
                     </ul>
-                    <nav class="site-footer__nav" aria-label="Footer navigation">${footerLinks}<a href="admin.html">Admin Login</a></nav>
+                    <nav class="site-footer__nav" aria-label="Footer navigation">${footerLinks}<a href="proposal/">Proposal</a><a href="admin.html">Admin Login</a></nav>
                 </section>
             </div>
 
