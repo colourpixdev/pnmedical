@@ -993,14 +993,16 @@ function handlePreviewSelectionEvent(event) {
 
 function attachPreviewBridge() {
     const frameDocument = previewFrame?.contentDocument;
-    if (!frameDocument) {
-        return;
-    }
+    if (!frameDocument) return;
 
     if (!frameDocument.getElementById("pn-admin-preview-style")) {
         const style = frameDocument.createElement("style");
         style.id = "pn-admin-preview-style";
-        style.textContent = `[data-admin-field]{cursor:pointer;transition:outline-color 120ms ease, box-shadow 120ms ease;}[data-admin-field]:hover{outline:2px solid rgba(2,132,199,.45)!important;outline-offset:2px;}.pn-admin-selected{outline:2px solid rgba(2,132,199,.92)!important;outline-offset:2px;box-shadow:0 0 0 3px rgba(2,132,199,.15);} `;
+        style.textContent = `
+            [data-admin-field] { cursor: pointer !important; transition: outline 0.15s ease; }
+            [data-admin-field]:hover { outline: 2px dashed #0284c7 !important; outline-offset: 2px; }
+            .pn-admin-selected { outline: 2px solid #2563eb !important; outline-offset: 3px; }
+        `;
         frameDocument.head.appendChild(style);
     }
 
@@ -1009,8 +1011,17 @@ function attachPreviewBridge() {
     }
 
     frameDocument.body.dataset.adminBridgeReady = "true";
+    // Intercept all clicks in capture phase so links never navigate while editing.
     frameDocument.body.addEventListener("click", (event) => {
-        const target = event.target.closest("[data-admin-field]");
+        const composed = typeof event.composedPath === "function" ? event.composedPath() : [];
+        const fromPath = composed.find((node) => {
+            return node && typeof node.getAttribute === "function" && node.getAttribute("data-admin-field");
+        });
+        const fallbackTarget = event.target && typeof event.target.closest === "function"
+            ? event.target.closest("[data-admin-field]")
+            : null;
+        const target = fromPath || fallbackTarget;
+
         if (!target) {
             clearSelectedElement();
             return;
@@ -1021,16 +1032,36 @@ function attachPreviewBridge() {
 
         frameDocument.querySelectorAll(".pn-admin-selected").forEach((node) => node.classList.remove("pn-admin-selected"));
         target.classList.add("pn-admin-selected");
-        syncSelectedField(keyToPath(target.getAttribute("data-admin-field")), { skipFocus: true });
-        document.body.classList.add("admin-element-focused");
+        const fieldKey = String(target.getAttribute("data-admin-field") || "");
+        if (!fieldKey) {
+            return;
+        }
+
+        syncSelectedField(keyToPath(fieldKey), { skipFocus: true });
     }, true);
 }
 
 function setSelectedElement(path, options = {}) {
-    const section = getActiveSection();
-    const resolvedPath = findFieldPathInSection(section, pathToKey(path)) || findFieldPathInSection(section, pathToKey(path || []));
+    let section = getActiveSection();
+    const requestedKey = pathToKey(path || []);
+    let resolvedPath = findFieldPathInSection(section, requestedKey);
+
     if (!resolvedPath) {
-        return;
+        const fallbackSection = getActivePage().sections.find((candidateSection) => {
+            return Boolean(findFieldPathInSection(candidateSection, requestedKey));
+        });
+
+        if (!fallbackSection) {
+            return;
+        }
+
+        section = fallbackSection;
+        activeSectionId = fallbackSection.id;
+        renderPortal();
+        resolvedPath = findFieldPathInSection(section, requestedKey);
+        if (!resolvedPath) {
+            return;
+        }
     }
 
     selectedFieldPath = resolvedPath;
@@ -1475,20 +1506,93 @@ function fileToDataUrl(file) {
 }
 
 function applyFieldValue(path, value) {
-    const fieldKey = pathToKey(path);
+    const normalizedPath = Array.isArray(path) ? path : keyToPath(String(path || ""));
+    const fieldKey = pathToKey(normalizedPath);
     const selector = `[data-path="${CSS.escape(fieldKey)}"]`;
     document.querySelectorAll(selector).forEach((input) => {
         input.value = value;
     });
 
+    const frameDocument = previewFrame?.contentDocument;
+    if (frameDocument) {
+        const previewSelector = `[data-admin-field="${CSS.escape(fieldKey)}"]`;
+        const previewElements = frameDocument.querySelectorAll(previewSelector);
+        const leafKey = String(normalizedPath[normalizedPath.length - 1] || "").toLowerCase();
+
+        previewElements.forEach((element) => {
+            if (element.tagName === "IMG") {
+                if (leafKey === "alt" || leafKey === "imagealt") {
+                    element.setAttribute("alt", value);
+                } else if (leafKey === "title" || leafKey === "imagetitle") {
+                    element.setAttribute("title", value);
+                } else {
+                    element.setAttribute("src", value);
+                }
+                return;
+            }
+
+            if (element.tagName === "VIDEO") {
+                if (leafKey === "poster") {
+                    element.setAttribute("poster", value);
+                } else if (leafKey === "src") {
+                    const source = element.querySelector("source");
+                    if (source) {
+                        source.setAttribute("src", value);
+                        element.load();
+                    } else {
+                        element.setAttribute("src", value);
+                    }
+                }
+                return;
+            }
+
+            if (element.tagName === "A" && (leafKey === "href" || leafKey === "url")) {
+                element.setAttribute("href", value);
+                return;
+            }
+
+            if (leafKey === "title") {
+                element.setAttribute("title", value);
+            } else {
+                element.textContent = value;
+            }
+        });
+    }
+
     statusMessage.textContent = "Unsaved changes. Save the section when you are done.";
 }
 
-function revertSelectedField(path) {
-    const section = getActiveSection();
-    const defaultValue = String(getByPath(defaultDataset, path) ?? "");
-    applyFieldValue(path, defaultValue);
+function getDefaultFieldValue(path) {
+    const normalizedPath = Array.isArray(path) ? path : keyToPath(String(path || ""));
+    return String(getByPath(defaultDataset, normalizedPath) ?? "");
+}
+
+function revertSelectedField(path = null) {
+    const fieldPath = Array.isArray(path)
+        ? path
+        : Array.isArray(selectedElement?.path)
+            ? selectedElement.path
+            : null;
+
+    if (!fieldPath) {
+        return;
+    }
+
+    const defaultValue = getDefaultFieldValue(fieldPath);
+    applyFieldValue(fieldPath, defaultValue);
+
+    const overrides = readOverrides();
+    unsetByPath(overrides, fieldPath);
+    localStorage.setItem(PN_ADMIN_CONTENT_OVERRIDES_KEY, JSON.stringify(overrides));
+
+    const inspectorInput = selectedFieldEditor?.querySelector(`[data-path="${CSS.escape(pathToKey(fieldPath))}"]`);
+    if (inspectorInput) {
+        inspectorInput.value = defaultValue;
+    }
+
+    statusMessage.textContent = "Field restored to original value.";
     renderPortal();
+    statusMessage.textContent = "Field restored to original value.";
 }
 
 function highlightSelectedFieldCard() {

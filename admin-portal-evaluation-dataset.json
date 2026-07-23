@@ -1,0 +1,234 @@
+{
+  "meta": {
+    "project": "PN Medical Admin Portal",
+    "dataset_version": "1.1.0",
+    "created_on": "2026-07-23",
+    "updated_on": "2026-07-23",
+    "tester": "GitHub Copilot (GPT-5.3-Codex)",
+    "workspace_root": "PN Medical",
+    "portal_entry": "admin.html",
+    "validation_after_refactor": true
+  },
+  "intended_outcomes": [
+    "Preview-first 2-column CMS layout: main preview stage + contextual inspector sidebar",
+    "Inspector starts empty, then populates only after clicking an editable preview element",
+    "Subtle hover outline in preview signals editable targets",
+    "Selection ring appears on clicked editable element",
+    "Image inspector includes thumbnail, source input, upload/drag-drop, alt text, title",
+    "Text inspector includes content editor and quick typography controls",
+    "Viewport controls (Mobile, Tablet, Laptop, Wide) change preview frame width"
+  ],
+  "test_environment": {
+    "os": "Windows",
+    "url": "file:///.../PN Medical/admin.html",
+    "auth_test_account": {
+      "username": "admin",
+      "password": "admin"
+    },
+    "notes": [
+      "Tested in VS Code integrated browser tooling",
+      "Preview is loaded in an iframe",
+      "file:// origin can affect storage behavior across files"
+    ]
+  },
+  "test_cases": [
+    {
+      "id": "TC-01",
+      "name": "Login and editor boot",
+      "expected": "Successful login reveals CMS workspace and live preview",
+      "observed": "Pass. Login with admin/admin opened workspace and iframe preview.",
+      "status": "pass"
+    },
+    {
+      "id": "TC-02",
+      "name": "2-column layout structure",
+      "expected": "Preview is primary stage; inspector is secondary contextual panel",
+      "observed": "Pass. Layout renders as preview-first with contextual right sidebar.",
+      "status": "pass"
+    },
+    {
+      "id": "TC-03",
+      "name": "Viewport controls",
+      "expected": "Mobile/Tablet/Laptop/Wide buttons update active state and viewport",
+      "observed": "Pass. Active state changed correctly for Laptop and Wide in UI.",
+      "status": "pass"
+    },
+    {
+      "id": "TC-04",
+      "name": "Text element selection",
+      "expected": "Clicking editable text opens text inspector for that field",
+      "observed": "Pass. Clicking hero/product text opened text inspector with correct path and controls.",
+      "status": "pass"
+    },
+    {
+      "id": "TC-05",
+      "name": "Image element selection",
+      "expected": "Clicking editable image opens image inspector with metadata fields",
+      "observed": "Pass. Clicking product image opened image inspector with source + Alt Text + Image Title.",
+      "status": "pass"
+    },
+    {
+      "id": "TC-06",
+      "name": "Link element selection",
+      "expected": "Clicking editable link should select link field and show link target control",
+      "observed": "Pass after refactor. Click on product quick link selects productQuickLinks.1.label and reveals Link Target control; cross-section selection also resolves when field belongs to a different section.",
+      "status": "pass"
+    },
+    {
+      "id": "TC-07",
+      "name": "Selected text -> live preview reflect",
+      "expected": "Editing selected text should be visible in live preview flow",
+      "observed": "Pass after refactor. Editing selected link/text field updates the iframe element text immediately in the same session.",
+      "status": "pass"
+    },
+    {
+      "id": "TC-08",
+      "name": "Reset field behavior",
+      "expected": "Reset field should restore selected field from default dataset",
+      "observed": "Pass after refactor. Reset restores inspector and preview value and removes the override path from localStorage.",
+      "status": "pass"
+    }
+  ],
+  "primary_findings": [
+    {
+      "severity": "info",
+      "issue": "TC-06 resolved after refactor.",
+      "impact": "Link selections now enter inspector mode and expose link controls.",
+      "likely_area": "attachPreviewBridge + setSelectedElement"
+    },
+    {
+      "severity": "info",
+      "issue": "TC-07 resolved after refactor.",
+      "impact": "Field edits now patch iframe nodes in real time.",
+      "likely_area": "applyFieldValue iframe patching"
+    },
+    {
+      "severity": "info",
+      "issue": "TC-08 resolved after refactor.",
+      "impact": "Reset now clears override and fully restores default value state.",
+      "likely_area": "revertSelectedField override removal + portal rerender"
+    },
+    {
+      "severity": "medium",
+      "issue": "Typography controls currently apply visual style in preview only and are not persisted to dataset schema.",
+      "impact": "Formatting can be lost after reload and is not part of durable content model.",
+      "likely_area": "previewInspectorState in-memory only"
+    }
+  ],
+  "recommended_fix_plan": [
+    {
+      "priority": 1,
+      "title": "Stabilize clickable-link selection in preview",
+      "status": "completed",
+      "actions": [
+        "Implemented composedPath-based target resolution with closest fallback",
+        "Prevented default navigation for editable click targets in capture phase",
+        "Added cross-section selection fallback in setSelectedElement"
+      ]
+    },
+    {
+      "priority": 2,
+      "title": "Fix preview update feedback loop",
+      "status": "completed",
+      "actions": [
+        "Added direct iframe node patching in applyFieldValue for text, links, images, and video source/poster",
+        "Kept existing save/override flow while making in-session preview updates immediate"
+      ]
+    },
+    {
+      "priority": 3,
+      "title": "Harden reset semantics",
+      "status": "completed",
+      "actions": [
+        "Reset now removes the selected field override path from localStorage",
+        "Portal rerender after reset keeps inspector and preview aligned to defaults"
+      ]
+    },
+    {
+      "priority": 4,
+      "title": "Decide persistence model for typography/link-target controls",
+      "status": "pending",
+      "actions": [
+        "If required long-term, add schema fields and write/read mapping in site dataset",
+        "If preview-only, label controls as temporary preview styling"
+      ]
+    }
+  ],
+  "admin_code_excerpts": [
+    {
+      "id": "EX-HTML-LAYOUT",
+      "file": "admin.html",
+      "line_start": 56,
+      "line_end": 124,
+      "code": "<div class=\"admin-layout\">\n  <section class=\"admin-stage admin-preview-panel angular-card\">\n    <div class=\"admin-panel__header\">...<h2>Live preview</h2>...</div>\n    <div class=\"admin-preview-toolbar\" role=\"toolbar\" aria-label=\"Preview viewport selector\">\n      <button ... data-viewport=\"mobile\">...\n      <button ... data-viewport=\"tablet\">...\n      <button ... data-viewport=\"laptop\">...\n      <button ... data-viewport=\"wide\">...\n    </div>\n    <div class=\"admin-preview-frame__shell\">\n      <div class=\"admin-preview-frame__viewport\" id=\"admin-preview-viewport\" data-viewport=\"mobile\">\n        <iframe id=\"admin-preview-frame\" title=\"PN Medical live preview\"></iframe>\n      </div>\n    </div>\n  </section>\n  <aside class=\"admin-workbench\">\n    <header class=\"admin-selection angular-card\">...\n      <div class=\"admin-context-controls\">\n        <select id=\"admin-page-select\"></select>\n        <select id=\"admin-section-select\"></select>\n      </div>\n    </header>\n    <section class=\"admin-selected-field angular-card\">...\n      <div id=\"admin-selected-field-editor\" class=\"admin-selected-field__editor\"></div>\n    </section>\n  </aside>\n</div>"
+    },
+    {
+      "id": "EX-CSS-LAYOUT",
+      "file": "admin.css",
+      "line_start": 183,
+      "line_end": 210,
+      "code": ".admin-layout {\n  display: grid;\n  grid-template-columns: minmax(0, 1.55fr) minmax(320px, 0.62fr);\n  gap: 1rem;\n  align-items: start;\n}\n\n.admin-stage,\n.admin-workbench {\n  display: grid;\n  gap: 1rem;\n}\n\n.admin-data-staging {\n  display: none;\n}"
+    },
+    {
+      "id": "EX-CSS-INSPECTOR",
+      "file": "admin.css",
+      "line_start": 440,
+      "line_end": 516,
+      "code": ".admin-inspector-empty { ... }\n.admin-inspector-grid { display: grid; gap: 0.8rem; }\n.admin-inspector-grid--2 { grid-template-columns: repeat(2, minmax(0, 1fr)); }\n.admin-dropzone { border: 1px dashed rgba(2, 132, 199, 0.55); ... }\n.admin-dropzone.is-dragging { ... }\n.admin-typography-controls button.is-active { ... }"
+    },
+    {
+      "id": "EX-JS-BRIDGE",
+      "file": "admin.js",
+      "line_start": 994,
+      "line_end": 1042,
+      "code": "function attachPreviewBridge() {\n  const frameDocument = previewFrame?.contentDocument;\n  if (!frameDocument) return;\n  ...\n  frameDocument.body.addEventListener(\"click\", (event) => {\n    const composed = typeof event.composedPath === \"function\" ? event.composedPath() : [];\n    const fromPath = composed.find((node) => node && typeof node.getAttribute === \"function\" && node.getAttribute(\"data-admin-field\"));\n    const fallbackTarget = event.target?.closest?.(\"[data-admin-field]\");\n    const target = fromPath || fallbackTarget;\n    if (!target) { clearSelectedElement(); return; }\n    event.preventDefault();\n    event.stopPropagation();\n    ...\n    syncSelectedField(keyToPath(fieldKey), { skipFocus: true });\n  }, true);\n}"
+    },
+    {
+      "id": "EX-JS-INSPECTOR",
+      "file": "admin.js",
+      "line_start": 1257,
+      "line_end": 1468,
+      "code": "function renderSelectedFieldInspector(page, section, mergedData) {\n  if (!selectedElement?.path) {\n    selectedFieldKind.textContent = \"waiting\";\n    selectedFieldEditor.innerHTML = \"...Inspector is ready...\";\n    return;\n  }\n\n  const isImageInspector = type === \"image\" || type === \"media\";\n  if (isImageInspector) {\n    // Source + alt + title + drag/drop + upload\n  } else {\n    // Text editor + typography buttons + optional link target\n  }\n\n  selectedFieldEditor.querySelectorAll(\"[data-path]\").forEach((editorInput) => {\n    editorInput.addEventListener(\"input\", () => {\n      const editorPath = keyToPath(String(editorInput.getAttribute(\"data-path\") || \"\"));\n      applyFieldValue(editorPath, String(editorInput.value || \"\"));\n      queueAutosave();\n    });\n  });\n}"
+    },
+    {
+      "id": "EX-JS-VALUE-PROP",
+      "file": "admin.js",
+      "line_start": 1508,
+      "line_end": 1563,
+      "code": "function applyFieldValue(path, value) {\n  const normalizedPath = Array.isArray(path) ? path : keyToPath(String(path || \"\"));\n  const fieldKey = pathToKey(normalizedPath);\n  ...\n  const previewElements = frameDocument.querySelectorAll(`[data-admin-field=\\\"${CSS.escape(fieldKey)}\\\"]`);\n  previewElements.forEach((element) => {\n    if (element.tagName === \"IMG\") { ... }\n    else if (element.tagName === \"VIDEO\") { ... }\n    else if (element.tagName === \"A\" && (leafKey === \"href\" || leafKey === \"url\")) { ... }\n    else { element.textContent = value; }\n  });\n  statusMessage.textContent = \"Unsaved changes. Save the section when you are done.\";\n}"
+    },
+    {
+      "id": "EX-JS-RESET",
+      "file": "admin.js",
+      "line_start": 1565,
+      "line_end": 1592,
+      "code": "function revertSelectedField(path = null) {\n  const fieldPath = Array.isArray(path) ? path : selectedElement?.path;\n  if (!fieldPath) return;\n  const defaultValue = getDefaultFieldValue(fieldPath);\n  applyFieldValue(fieldPath, defaultValue);\n  const overrides = readOverrides();\n  unsetByPath(overrides, fieldPath);\n  localStorage.setItem(PN_ADMIN_CONTENT_OVERRIDES_KEY, JSON.stringify(overrides));\n  renderPortal();\n  statusMessage.textContent = \"Field restored to original value.\";\n}"
+    }
+  ],
+  "post_fix_verification": {
+    "executed_on": "2026-07-23",
+    "summary": "Re-test completed after admin.js refactor; previously failing cases now pass.",
+    "evidence": [
+      {
+        "check": "TC-06",
+        "result": "pass",
+        "details": "Selecting productQuickLinks.1.label from preview produced selectedPath=productQuickLinks.1.label and hasLinkTarget=true."
+      },
+      {
+        "check": "TC-07",
+        "result": "pass",
+        "details": "Inspector value QA Link Label Update patched to iframe text node in-session."
+      },
+      {
+        "check": "TC-08",
+        "result": "pass",
+        "details": "Reset restored inspector + preview value to default and cleared overrideValue (null) for productQuickLinks.1.label."
+      }
+    ],
+    "remaining_risk": [
+      "Typography controls still rely on in-memory previewInspectorState and are not persisted in the content schema."
+    ]
+  },
+  "prompt_template_for_external_ai": "Evaluate PN Medical admin portal implementation against intended UX goals using this dataset. Prioritize functional regressions over style opinions. Return: (1) severity-ranked defects with likely root cause, (2) exact fix patches by file, (3) minimal regression test matrix, (4) release readiness decision.",
+  "cleanup_note": "Any local test override values were cleared from localStorage at end of this test session."
+}
