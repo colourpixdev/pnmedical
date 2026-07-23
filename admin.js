@@ -3,72 +3,609 @@ const PN_ADMIN_CONTENT_OVERRIDES_KEY = "pnMedicalContentOverrides";
 const PN_ADMIN_USERNAME = "admin";
 const PN_ADMIN_PASSWORD = "admin";
 
-const pageOrder = ["home", "products", "accreditation", "faq", "news", "contact", "global"];
-const pageMeta = {
-    home: { title: "Home Page", description: "Hero, campaign, and homepage highlight content.", url: "index.html" },
-    products: { title: "Products Page", description: "Product intros, product cards, filters, and feature sections.", url: "products.html" },
-    accreditation: { title: "Accreditation Page", description: "Compliance text and accreditation visuals.", url: "accreditation.html" },
-    faq: { title: "FAQ Page", description: "Frequently asked questions and answers.", url: "faq.html" },
-    news: { title: "News Page", description: "News cards and social link content.", url: "news.html" },
-    contact: { title: "Contact Page", description: "Contact intro, contacts, and inquiry form copy.", url: "contact.html" },
-    global: { title: "Global Elements", description: "Branding, navigation labels, and shared top bar content.", url: "index.html" }
-};
-
-const pagePreviewLabels = {
-    home: ["Hero text and video", "Campaign spotlight", "Homepage highlights", "Featured product preview", "Accreditation snapshot", "Call to action"],
-    products: ["Product jump links", "Touch-free dispenser section", "Refill bag section", "Soap refill section", "Catalog filters", "Portable accessory section"],
-    accreditation: ["Credibility summary", "Supporting visuals", "Compliance references"],
-    faq: ["FAQ answers"],
-    news: ["Social feed" , "News stories"],
-    contact: ["Procurement inquiry form", "Contact details"],
-    global: ["Top bar", "Header navigation", "Footer navigation"]
-};
-
-const pagePreviewAnchors = {
-    home: [
-        { label: "Hero text + video", anchor: "home" },
-        { label: "Flyer spotlight", anchor: null },
-        { label: "Homepage highlights", anchor: null },
-        { label: "Featured product preview", anchor: null },
-        { label: "Accreditation snapshot", anchor: null },
-        { label: "Call to action", anchor: null }
-    ],
-    products: [
-        { label: "Quick links", anchor: "home" },
-        { label: "Touch-free dispensers", anchor: "home" },
-        { label: "1 Litre refill bag", anchor: "profile" },
-        { label: "Soap refill bag", anchor: "messages" },
-        { label: "50ml spray bottle", anchor: "settings" },
-        { label: "Accessory section", anchor: "fund" },
-        { label: "Catalog filters", anchor: null }
-    ],
-    accreditation: [
-        { label: "Intro copy", anchor: null },
-        { label: "Credibility summary", anchor: null },
-        { label: "Visual evidence", anchor: null }
-    ],
-    faq: [{ label: "FAQ answers", anchor: null }],
-    news: [{ label: "Social feed", anchor: null }, { label: "News stories", anchor: null }],
-    contact: [{ label: "Inquiry form", anchor: null }],
-    global: [{ label: "Top bar", anchor: null }, { label: "Header navigation", anchor: null }, { label: "Footer navigation", anchor: null }]
-};
+const pageConfig = [
+    {
+        id: "home",
+        title: "Home",
+        description: "Hero, campaign content, product teaser, credibility snapshot, and CTA.",
+        url: "index.html",
+        previewLabel: "Home preview",
+        sections: [
+            {
+                id: "hero",
+                title: "Hero",
+                summary: "Headline, intro copy, CTA buttons, metric badges, and hero video.",
+                previewAnchor: "home",
+                previewLabel: "Hero",
+                fields: [
+                    ["hero", "badge"],
+                    ["hero", "title"],
+                    ["hero", "accent"],
+                    ["hero", "description"],
+                    ["hero", "primaryCta", "label"],
+                    ["hero", "secondaryCta", "label"],
+                    ["hero", "supportTitle"],
+                    ["hero", "supportPoints", 0],
+                    ["hero", "supportPoints", 1],
+                    ["hero", "supportPoints", 2],
+                    ["mediaAssets", 0, "title"],
+                    ["mediaAssets", 0, "description"],
+                    ["mediaAssets", 0, "src"],
+                    ["mediaAssets", 0, "poster"]
+                ]
+            },
+            {
+                id: "flyerSpotlight",
+                title: "Campaign spotlight",
+                summary: "Campaign guidance, protocol panel, badge artwork, and inquiry CTA.",
+                previewAnchor: null,
+                previewLabel: "Spotlight",
+                fields: [
+                    ["flyerSpotlight", "title"],
+                    ["flyerSpotlight", "description"],
+                    ["flyerSpotlight", "emphasis"],
+                    ["flyerSpotlight", "panelTitle"],
+                    ["flyerSpotlight", "panelFooter"],
+                    ["flyerSpotlight", "disclaimer"],
+                    ["flyerSpotlight", "ctaTitle"],
+                    ["flyerSpotlight", "contactLines", 0],
+                    ["flyerSpotlight", "contactLines", 1],
+                    ["flyerSpotlight", "contactLines", 2]
+                ]
+            },
+            {
+                id: "highlights",
+                title: "Highlights",
+                summary: "Homepage advantage cards and the featured range teaser.",
+                previewAnchor: null,
+                previewLabel: "Highlights",
+                fields: [
+                    ["homeHighlights", 0, "title"],
+                    ["homeHighlights", 0, "description"],
+                    ["homeHighlights", 0, "href"],
+                    ["homeHighlights", 1, "title"],
+                    ["homeHighlights", 1, "description"],
+                    ["homeHighlights", 1, "href"],
+                    ["homeHighlights", 2, "title"],
+                    ["homeHighlights", 2, "description"],
+                    ["homeHighlights", 2, "href"],
+                    ["pageIntro", "products", "eyebrow"],
+                    ["pageIntro", "products", "title"],
+                    ["pageIntro", "products", "description"]
+                ]
+            },
+            {
+                id: "productPreview",
+                title: "Featured product preview",
+                summary: "Two featured product links that should stay prominent and concise.",
+                previewAnchor: null,
+                previewLabel: "Featured range",
+                fields: [
+                    ["pageIntro", "accreditation", "eyebrow"],
+                    ["pageIntro", "accreditation", "title"],
+                    ["pageIntro", "accreditation", "description"],
+                    ["pageIntro", "faq", "eyebrow"],
+                    ["pageIntro", "faq", "title"],
+                    ["pageIntro", "faq", "description"],
+                    ["pageIntro", "news", "eyebrow"],
+                    ["pageIntro", "news", "title"],
+                    ["pageIntro", "news", "description"],
+                    ["pageIntro", "contact", "eyebrow"],
+                    ["pageIntro", "contact", "title"],
+                    ["pageIntro", "contact", "description"]
+                ]
+            },
+            {
+                id: "credibility",
+                title: "Accreditation snapshot",
+                summary: "Accreditation callout and trust signals on the home page.",
+                previewAnchor: null,
+                previewLabel: "Credibility",
+                fields: [
+                    ["credibility", "title"],
+                    ["credibility", "summary"],
+                    ["credibility", "audiences", 0],
+                    ["credibility", "audiences", 1],
+                    ["credibility", "audiences", 2],
+                    ["credibility", "audiences", 3],
+                    ["credibility", "accreditationTitle"],
+                    ["credibility", "accreditationSummary"],
+                    ["credibility", "certifications", 0],
+                    ["credibility", "certifications", 1],
+                    ["credibility", "certifications", 2]
+                ]
+            },
+            {
+                id: "cta",
+                title: "Call to action",
+                summary: "Closing callout that pushes visitors into contact.",
+                previewAnchor: null,
+                previewLabel: "CTA",
+                fields: [
+                    ["hero", "primaryCta", "href"],
+                    ["hero", "secondaryCta", "href"],
+                    ["flyerSpotlight", "ctaTitle"],
+                    ["inquiry", "title"],
+                    ["inquiry", "copy"]
+                ]
+            }
+        ]
+    },
+    {
+        id: "products",
+        title: "Products",
+        description: "Jump links, product features, catalog, filters, and accessory content.",
+        url: "products.html",
+        previewLabel: "Products preview",
+        sections: [
+            {
+                id: "productLinks",
+                title: "Quick links",
+                summary: "Anchor links for fast navigation to the product sections.",
+                previewAnchor: "home",
+                previewLabel: "Quick links",
+                fields: [
+                    ["productQuickLinks", 0, "label"],
+                    ["productQuickLinks", 0, "href"],
+                    ["productQuickLinks", 1, "label"],
+                    ["productQuickLinks", 1, "href"],
+                    ["productQuickLinks", 2, "label"],
+                    ["productQuickLinks", 2, "href"],
+                    ["productQuickLinks", 3, "label"],
+                    ["productQuickLinks", 3, "href"],
+                    ["productQuickLinks", 4, "label"],
+                    ["productQuickLinks", 4, "href"]
+                ]
+            },
+            {
+                id: "touchFree",
+                title: "Touch-free dispensers",
+                summary: "Main dispenser hardware page block with image, benefits, and compliance.",
+                previewAnchor: "home",
+                previewLabel: "Touch-free",
+                fields: [
+                    ["touchFreeFeature", "eyebrow"],
+                    ["touchFreeFeature", "title"],
+                    ["touchFreeFeature", "intro"],
+                    ["touchFreeFeature", "imageSrc"],
+                    ["touchFreeFeature", "imageAlt"],
+                    ["touchFreeFeature", "listGroups", 0, "title"],
+                    ["touchFreeFeature", "listGroups", 0, "items", 0],
+                    ["touchFreeFeature", "listGroups", 0, "items", 1],
+                    ["touchFreeFeature", "listGroups", 0, "items", 2],
+                    ["touchFreeFeature", "listGroups", 1, "title"],
+                    ["touchFreeFeature", "listGroups", 1, "items", 0],
+                    ["touchFreeFeature", "listGroups", 1, "items", 1],
+                    ["touchFreeFeature", "listGroups", 1, "items", 2],
+                    ["touchFreeFeature", "tags", 0],
+                    ["touchFreeFeature", "tags", 1],
+                    ["touchFreeFeature", "tags", 2],
+                    ["touchFreeFeature", "tags", 3],
+                    ["touchFreeFeature", "tags", 4],
+                    ["touchFreeFeature", "compliance"],
+                    ["touchFreeFeature", "warning"]
+                ]
+            },
+            {
+                id: "refillBag",
+                title: "1 Litre refill bag",
+                summary: "Refill consumable block for alcohol sanitiser.",
+                previewAnchor: "profile",
+                previewLabel: "Refill bag",
+                fields: [
+                    ["refillFeature", "eyebrow"],
+                    ["refillFeature", "title"],
+                    ["refillFeature", "intro"],
+                    ["refillFeature", "imageSrc"],
+                    ["refillFeature", "imageAlt"],
+                    ["refillFeature", "listGroups", 0, "title"],
+                    ["refillFeature", "listGroups", 0, "items", 0],
+                    ["refillFeature", "listGroups", 0, "items", 1],
+                    ["refillFeature", "listGroups", 0, "items", 2],
+                    ["refillFeature", "listGroups", 0, "items", 3],
+                    ["refillFeature", "listGroups", 0, "items", 4],
+                    ["refillFeature", "listGroups", 0, "items", 5],
+                    ["refillFeature", "listGroups", 0, "items", 6],
+                    ["refillFeature", "listGroups", 1, "title"],
+                    ["refillFeature", "listGroups", 1, "items", 0],
+                    ["refillFeature", "listGroups", 1, "items", 1],
+                    ["refillFeature", "listGroups", 1, "items", 2],
+                    ["refillFeature", "listGroups", 1, "items", 3],
+                    ["refillFeature", "tags", 0],
+                    ["refillFeature", "tags", 1],
+                    ["refillFeature", "tags", 2],
+                    ["refillFeature", "tags", 3],
+                    ["refillFeature", "tags", 4],
+                    ["refillFeature", "compliance"]
+                ]
+            },
+            {
+                id: "soapRefill",
+                title: "Soap refill bag",
+                summary: "Anti-bacterial soap refill with mounted system details.",
+                previewAnchor: "messages",
+                previewLabel: "Soap refill",
+                fields: [
+                    ["soapFeature", "eyebrow"],
+                    ["soapFeature", "title"],
+                    ["soapFeature", "intro"],
+                    ["soapFeature", "imageSrc"],
+                    ["soapFeature", "imageAlt"],
+                    ["soapFeature", "listGroups", 0, "title"],
+                    ["soapFeature", "listGroups", 0, "items", 0],
+                    ["soapFeature", "listGroups", 0, "items", 1],
+                    ["soapFeature", "listGroups", 0, "items", 2],
+                    ["soapFeature", "listGroups", 0, "items", 3],
+                    ["soapFeature", "listGroups", 1, "title"],
+                    ["soapFeature", "listGroups", 1, "items", 0],
+                    ["soapFeature", "listGroups", 1, "items", 1],
+                    ["soapFeature", "listGroups", 1, "items", 2],
+                    ["soapFeature", "listGroups", 1, "items", 3],
+                    ["soapFeature", "tags", 0],
+                    ["soapFeature", "tags", 1],
+                    ["soapFeature", "tags", 2],
+                    ["soapFeature", "tags", 3],
+                    ["soapFeature", "tags", 4],
+                    ["soapFeature", "compliance"]
+                ]
+            },
+            {
+                id: "portable",
+                title: "Portable spray bottle",
+                summary: "50ml spray bottle for mobile hygiene use.",
+                previewAnchor: "settings",
+                previewLabel: "Portable",
+                fields: [
+                    ["sprayBottleFeature", "eyebrow"],
+                    ["sprayBottleFeature", "title"],
+                    ["sprayBottleFeature", "intro"],
+                    ["sprayBottleFeature", "imageSrc"],
+                    ["sprayBottleFeature", "imageAlt"],
+                    ["sprayBottleFeature", "listGroups", 0, "title"],
+                    ["sprayBottleFeature", "listGroups", 0, "items", 0],
+                    ["sprayBottleFeature", "listGroups", 0, "items", 1],
+                    ["sprayBottleFeature", "listGroups", 0, "items", 2],
+                    ["sprayBottleFeature", "listGroups", 1, "title"],
+                    ["sprayBottleFeature", "listGroups", 1, "items", 0],
+                    ["sprayBottleFeature", "listGroups", 1, "items", 1],
+                    ["sprayBottleFeature", "listGroups", 1, "items", 2],
+                    ["sprayBottleFeature", "tags", 0],
+                    ["sprayBottleFeature", "tags", 1],
+                    ["sprayBottleFeature", "tags", 2],
+                    ["sprayBottleFeature", "tags", 3],
+                    ["sprayBottleFeature", "tags", 4],
+                    ["sprayBottleFeature", "compliance"]
+                ]
+            },
+            {
+                id: "accessory",
+                title: "Accessory",
+                summary: "Retractable reel and clip content for the spray bottle.",
+                previewAnchor: "fund",
+                previewLabel: "Accessory",
+                fields: [
+                    ["reelClipFeature", "eyebrow"],
+                    ["reelClipFeature", "title"],
+                    ["reelClipFeature", "intro"],
+                    ["reelClipFeature", "imageSrc"],
+                    ["reelClipFeature", "imageAlt"],
+                    ["reelClipFeature", "listGroups", 0, "title"],
+                    ["reelClipFeature", "listGroups", 0, "items", 0],
+                    ["reelClipFeature", "listGroups", 0, "items", 1],
+                    ["reelClipFeature", "listGroups", 0, "items", 2],
+                    ["reelClipFeature", "listGroups", 1, "title"],
+                    ["reelClipFeature", "listGroups", 1, "items", 0],
+                    ["reelClipFeature", "listGroups", 1, "items", 1],
+                    ["reelClipFeature", "listGroups", 1, "items", 2],
+                    ["reelClipFeature", "tags", 0],
+                    ["reelClipFeature", "tags", 1],
+                    ["reelClipFeature", "tags", 2],
+                    ["reelClipFeature", "tags", 3],
+                    ["reelClipFeature", "compliance"]
+                ]
+            },
+            {
+                id: "catalog",
+                title: "Catalog",
+                summary: "Catalog filter bar and grid heading.",
+                previewAnchor: null,
+                previewLabel: "Catalog",
+                fields: [
+                    ["filters", 0, "label"],
+                    ["filters", 0, "id"],
+                    ["filters", 1, "label"],
+                    ["filters", 1, "id"],
+                    ["filters", 2, "label"],
+                    ["filters", 2, "id"]
+                ]
+            }
+        ]
+    },
+    {
+        id: "accreditation",
+        title: "Accreditation",
+        description: "Credibility, supporting visuals, and compliance band content.",
+        url: "accreditation.html",
+        previewLabel: "Accreditation preview",
+        sections: [
+            {
+                id: "intro",
+                title: "Intro",
+                summary: "Page intro copy and accent headings.",
+                previewAnchor: null,
+                previewLabel: "Intro",
+                fields: [
+                    ["pageIntro", "accreditation", "eyebrow"],
+                    ["pageIntro", "accreditation", "title"],
+                    ["pageIntro", "accreditation", "description"]
+                ]
+            },
+            {
+                id: "credibilityPage",
+                title: "Credibility summary",
+                summary: "Facility fit, accreditation summary, and certification list.",
+                previewAnchor: null,
+                previewLabel: "Credibility",
+                fields: [
+                    ["credibility", "eyebrow"],
+                    ["credibility", "title"],
+                    ["credibility", "summary"],
+                    ["credibility", "audiences", 0],
+                    ["credibility", "audiences", 1],
+                    ["credibility", "audiences", 2],
+                    ["credibility", "audiences", 3],
+                    ["credibility", "accreditationTitle"],
+                    ["credibility", "accreditationSummary"],
+                    ["credibility", "certifications", 0],
+                    ["credibility", "certifications", 1],
+                    ["credibility", "certifications", 2]
+                ]
+            },
+            {
+                id: "visuals",
+                title: "Supporting visuals",
+                summary: "The product images that support accreditation positioning.",
+                previewAnchor: null,
+                previewLabel: "Visuals",
+                fields: [
+                    ["accreditationVisuals", 0, "src"],
+                    ["accreditationVisuals", 0, "alt"],
+                    ["accreditationVisuals", 0, "title"],
+                    ["accreditationVisuals", 0, "caption"],
+                    ["accreditationVisuals", 1, "src"],
+                    ["accreditationVisuals", 1, "alt"],
+                    ["accreditationVisuals", 1, "title"],
+                    ["accreditationVisuals", 1, "caption"]
+                ]
+            },
+            {
+                id: "complianceBand",
+                title: "Compliance references",
+                summary: "Cross-page compliance band content.",
+                previewAnchor: null,
+                previewLabel: "Compliance",
+                fields: [
+                    ["touchFreeFeature", "compliance"],
+                    ["refillFeature", "compliance"],
+                    ["soapFeature", "compliance"],
+                    ["sprayBottleFeature", "compliance"]
+                ]
+            }
+        ]
+    },
+    {
+        id: "faq",
+        title: "FAQ",
+        description: "Static FAQ answers and question text.",
+        url: "faq.html",
+        previewLabel: "FAQ preview",
+        sections: [
+            {
+                id: "faqAnswers",
+                title: "FAQ answers",
+                summary: "Questions and answers shown on the page.",
+                previewAnchor: null,
+                previewLabel: "FAQ",
+                fields: [
+                    ["faqs", 0, "question"],
+                    ["faqs", 0, "answer"],
+                    ["faqs", 1, "question"],
+                    ["faqs", 1, "answer"],
+                    ["faqs", 2, "question"],
+                    ["faqs", 2, "answer"],
+                    ["faqs", 3, "question"],
+                    ["faqs", 3, "answer"]
+                ]
+            }
+        ]
+    },
+    {
+        id: "news",
+        title: "News",
+        description: "Campaign updates, Facebook timeline, and LinkedIn hints.",
+        url: "news.html",
+        previewLabel: "News preview",
+        sections: [
+            {
+                id: "social",
+                title: "Social feed",
+                summary: "Facebook and LinkedIn links shown in the social section.",
+                previewAnchor: null,
+                previewLabel: "Social",
+                fields: [
+                    ["socialFeeds", "facebookUrl"],
+                    ["socialFeeds", "linkedinUrl"],
+                    ["socialFeeds", "linkedinNotes", 0],
+                    ["socialFeeds", "linkedinNotes", 1]
+                ]
+            },
+            {
+                id: "newsCards",
+                title: "News stories",
+                summary: "Historical story cards on the page.",
+                previewAnchor: null,
+                previewLabel: "Stories",
+                fields: [
+                    ["news", 0, "date"],
+                    ["news", 0, "title"],
+                    ["news", 0, "summary"],
+                    ["news", 1, "date"],
+                    ["news", 1, "title"],
+                    ["news", 1, "summary"],
+                    ["news", 2, "date"],
+                    ["news", 2, "title"],
+                    ["news", 2, "summary"]
+                ]
+            }
+        ]
+    },
+    {
+        id: "contact",
+        title: "Contact",
+        description: "Contact intro, contact details, and inquiry copy.",
+        url: "contact.html",
+        previewLabel: "Contact preview",
+        sections: [
+            {
+                id: "contactIntro",
+                title: "Intro",
+                summary: "Contact page intro text.",
+                previewAnchor: null,
+                previewLabel: "Intro",
+                fields: [
+                    ["pageIntro", "contact", "eyebrow"],
+                    ["pageIntro", "contact", "title"],
+                    ["pageIntro", "contact", "description"]
+                ]
+            },
+            {
+                id: "inquiry",
+                title: "Procurement inquiry",
+                summary: "Contact callout text and form details.",
+                previewAnchor: null,
+                previewLabel: "Inquiry",
+                fields: [
+                    ["inquiry", "title"],
+                    ["inquiry", "copy"],
+                    ["inquiry", "contacts", 0],
+                    ["inquiry", "contacts", 1],
+                    ["inquiry", "contacts", 2]
+                ]
+            }
+        ]
+    },
+    {
+        id: "global",
+        title: "Global",
+        description: "Shared elements like brand, navigation, top bar, and footer.",
+        url: "index.html",
+        previewLabel: "Global preview",
+        sections: [
+            {
+                id: "brand",
+                title: "Brand and navigation",
+                summary: "Tagline, nav labels, and top bar contact details.",
+                previewAnchor: null,
+                previewLabel: "Header",
+                fields: [
+                    ["brand", "tagline"],
+                    ["navigation", 0, "label"],
+                    ["navigation", 0, "href"],
+                    ["navigation", 1, "label"],
+                    ["navigation", 1, "href"],
+                    ["navigation", 2, "label"],
+                    ["navigation", 2, "href"],
+                    ["navigation", 3, "label"],
+                    ["navigation", 3, "href"],
+                    ["navigation", 4, "label"],
+                    ["navigation", 4, "href"],
+                    ["navigation", 5, "label"],
+                    ["navigation", 5, "href"],
+                    ["topBar", "address"],
+                    ["topBar", "phoneDisplay"],
+                    ["topBar", "phoneHref"],
+                    ["topBar", "email"]
+                ]
+            },
+            {
+                id: "footer",
+                title: "Footer navigation",
+                summary: "Footer copy and links.",
+                previewAnchor: null,
+                previewLabel: "Footer",
+                fields: [
+                    ["hero", "primaryCta", "href"],
+                    ["hero", "secondaryCta", "href"]
+                ]
+            }
+        ]
+    }
+];
 
 const loginSection = document.querySelector("#admin-login");
 const editorSection = document.querySelector("#admin-editor");
 const loginForm = document.querySelector("#admin-login-form");
 const loginError = document.querySelector("#admin-login-error");
-const groupsRoot = document.querySelector("#admin-groups");
 const statusMessage = document.querySelector("#admin-status");
 const saveButton = document.querySelector("#admin-save");
 const resetButton = document.querySelector("#admin-reset");
 const logoutButton = document.querySelector("#admin-logout");
+const saveSectionButton = document.querySelector("#admin-save-section");
+const revertSectionButton = document.querySelector("#admin-revert-section");
+const searchInput = document.querySelector("#admin-search");
+const pageListRoot = document.querySelector("#admin-page-list");
+const sectionListRoot = document.querySelector("#admin-section-list");
+const fieldListRoot = document.querySelector("#admin-field-list");
+const thumbsRoot = document.querySelector("#admin-section-thumbs");
+const previewFrame = document.querySelector("#admin-preview-frame");
+const previewCaption = document.querySelector("#admin-preview-caption");
+const previewLinks = document.querySelector("#admin-preview-links");
+const pageBadge = document.querySelector("#admin-page-badge");
+const sectionTitle = document.querySelector("#admin-section-title");
+const sectionSummary = document.querySelector("#admin-section-summary");
+const pageCount = document.querySelector("#admin-page-count");
+const sectionCount = document.querySelector("#admin-section-count");
+const sectionFieldCount = document.querySelector("#admin-section-field-count");
+const sectionPreviewLabel = document.querySelector("#admin-section-preview-label");
+const imageAssetList = document.querySelector("#admin-image-assets");
+const mediaAssetList = document.querySelector("#admin-media-assets");
+const selectedFieldKind = document.querySelector("#admin-selected-field-kind");
+const selectedFieldEditor = document.querySelector("#admin-selected-field-editor");
 
 const defaultDataset = window.__pnDefaultDataset;
+const assetLibrary = {
+    images: [
+        "logo.png",
+        "pn-medical-logo.svg",
+        "flyer-germ-badge.svg",
+        "hygiene-steps.svg",
+        "touch-free-dispensers.svg",
+        "spray-bottle-product.svg",
+        "soap-refill-bag-product.svg",
+        "refill-bag-product.svg",
+        "reel-clip-product.svg",
+        "products/1.png",
+        "products/2.png",
+        "products/3.png",
+        "products/4.png",
+        "products/5.png"
+    ],
+    media: ["Website.mp4", "Social Media.mp4"]
+};
+let activePageId = pageConfig[0].id;
+let activeSectionId = pageConfig[0].sections[0].id;
+let activeFieldInput = null;
+let selectedFieldPath = null;
+let selectedElement = null;
+let previewViewportMode = "mobile";
+let autosaveTimer = null;
+const PREVIEW_MESSAGE_SOURCE = "pn-medical-preview";
+const EDITOR_MESSAGE_SOURCE = "pn-medical-editor";
 
 if (!defaultDataset) {
     loginSection.hidden = true;
     editorSection.hidden = false;
-    groupsRoot.innerHTML = '<p class="admin-error">Unable to load default content dataset. Ensure site.js loads before admin.js.</p>';
+    statusMessage.textContent = "Unable to load default content dataset. Ensure site.js loads before admin.js.";
 } else {
     initializeAdmin();
 }
@@ -78,8 +615,35 @@ function initializeAdmin() {
     saveButton.addEventListener("click", saveChanges);
     resetButton.addEventListener("click", resetAllChanges);
     logoutButton.addEventListener("click", logout);
+    saveSectionButton.addEventListener("click", saveChanges);
+    revertSectionButton.addEventListener("click", revertCurrentSection);
+    searchInput.addEventListener("input", renderPortal);
+    previewFrame.addEventListener("load", attachPreviewBridge);
+    window.addEventListener("message", handlePreviewMessage);
+    document.addEventListener("pn-admin-preview-select", handlePreviewSelectionEvent);
+    document.querySelectorAll("[data-viewport]").forEach((button) => {
+        button.addEventListener("click", () => setPreviewViewport(String(button.getAttribute("data-viewport") || "mobile")));
+    });
+    const adminApi = {
+        selectField(path) {
+            syncSelectedField(Array.isArray(path) ? path : keyToPath(String(path || "")), { skipFocus: true });
+            document.body.classList.add("admin-element-focused");
+        },
+        clearSelection() {
+            clearSelectedElement({ skipRender: true });
+            renderPortal();
+        },
+        setViewport(viewport) {
+            setPreviewViewport(viewport);
+        }
+    };
+    window.__pnAdminApi = adminApi;
+    document.body.__pnAdminApi = adminApi;
+    populateAssetSuggestions();
 
-    if (sessionStorage.getItem(PN_ADMIN_AUTH_KEY) === "1") {
+    document.body.classList.toggle("admin-authenticated", sessionStorage.getItem(PN_ADMIN_AUTH_KEY) === "1");
+
+    if (document.body.classList.contains("admin-authenticated")) {
         showEditor();
         return;
     }
@@ -95,6 +659,7 @@ function handleLogin(event) {
 
     if (username === PN_ADMIN_USERNAME && password === PN_ADMIN_PASSWORD) {
         sessionStorage.setItem(PN_ADMIN_AUTH_KEY, "1");
+        document.body.classList.add("admin-authenticated");
         loginError.textContent = "";
         showEditor();
         return;
@@ -104,18 +669,24 @@ function handleLogin(event) {
 }
 
 function showLogin() {
+    document.body.classList.remove("admin-authenticated");
     loginSection.hidden = false;
     editorSection.hidden = true;
 }
 
 function showEditor() {
+    document.body.classList.add("admin-authenticated");
     loginSection.hidden = true;
     editorSection.hidden = false;
-    renderEditor();
+    if (!selectedElement) {
+        document.body.classList.remove("admin-element-focused");
+    }
+    renderPortal();
 }
 
 function logout() {
     sessionStorage.removeItem(PN_ADMIN_AUTH_KEY);
+    document.body.classList.remove("admin-authenticated");
     statusMessage.textContent = "Logged out.";
     showLogin();
 }
@@ -124,12 +695,23 @@ function readOverrides() {
     try {
         const raw = localStorage.getItem(PN_ADMIN_CONTENT_OVERRIDES_KEY);
         if (!raw) {
-            return null;
+            return {};
         }
+
         const parsed = JSON.parse(raw);
-        return parsed && typeof parsed === "object" ? parsed : null;
+        return parsed && typeof parsed === "object" ? parsed : {};
     } catch (_error) {
-        return null;
+        return {};
+    }
+}
+
+function populateAssetSuggestions() {
+    if (imageAssetList) {
+        imageAssetList.innerHTML = assetLibrary.images.map((asset) => `<option value="${escapeHtml(asset)}"></option>`).join("");
+    }
+
+    if (mediaAssetList) {
+        mediaAssetList.innerHTML = assetLibrary.media.map((asset) => `<option value="${escapeHtml(asset)}"></option>`).join("");
     }
 }
 
@@ -165,28 +747,6 @@ function mergeContent(baseValue, overrideValue) {
     return baseValue;
 }
 
-function collectStringLeaves(value, trail = [], result = []) {
-    if (typeof value === "string") {
-        result.push({ path: [...trail], defaultValue: value });
-        return result;
-    }
-
-    if (Array.isArray(value)) {
-        value.forEach((item, index) => collectStringLeaves(item, [...trail, index], result));
-        return result;
-    }
-
-    if (isMergeableObject(value)) {
-        Object.keys(value).forEach((key) => collectStringLeaves(value[key], [...trail, key], result));
-    }
-
-    return result;
-}
-
-function getByPath(source, path) {
-    return path.reduce((acc, part) => (acc == null ? acc : acc[part]), source);
-}
-
 function setByPath(target, path, value) {
     let current = target;
     path.forEach((part, index) => {
@@ -205,164 +765,41 @@ function setByPath(target, path, value) {
     });
 }
 
-function fieldType(path, value) {
-    const key = String(path[path.length - 1]).toLowerCase();
-    if (/\.(png|jpg|jpeg|gif|svg|webp)$/i.test(value) || key.includes("image") || key.includes("poster")) {
-        return "image";
-    }
-
-    if (/\.(mp4|webm|ogg)$/i.test(value) || key === "src") {
-        return "media";
-    }
-
-    if (value.length > 90) {
-        return "textarea";
-    }
-
-    return "text";
+function getByPath(source, path) {
+    return path.reduce((acc, part) => (acc == null ? acc : acc[part]), source);
 }
 
-function pageCategory(path) {
-    const root = String(path[0]);
-    if (root === "hero" || root === "mediaAssets" || root === "homeHighlights" || root === "flyerSpotlight") {
-        return "home";
-    }
-
-    if (root === "products" || root === "filters" || root === "productQuickLinks" || root.endsWith("Feature")) {
-        return "products";
-    }
-
-    if (root === "accreditationIntroVisual" || root === "accreditationCredibilityVisual" || root === "accreditationVisuals" || root === "credibility") {
-        return "accreditation";
-    }
-
-    if (root === "faqs") {
-        return "faq";
-    }
-
-    if (root === "socialFeeds" || root === "news") {
-        return "news";
-    }
-
-    if (root === "inquiry") {
-        return "contact";
-    }
-
-    if (root === "pageIntro") {
-        const page = String(path[1] || "").toLowerCase();
-        if (pageMeta[page]) {
-            return page;
-        }
-    }
-
-    return "global";
+function isImageValue(value) {
+    return typeof value === "string" && /\.(png|jpg|jpeg|gif|svg|webp)$/i.test(value);
 }
 
-function elementLabel(path) {
+function isMediaValue(value) {
+    return typeof value === "string" && /\.(mp4|webm|ogg)$/i.test(value);
+}
+
+function fieldLabel(path) {
     return path.map((part) => (typeof part === "number" ? `Item ${part + 1}` : toTitleCase(part))).join(" / ");
 }
 
 function toTitleCase(value) {
-    return value.replace(/([A-Z])/g, " $1").replace(/[_-]/g, " ").replace(/^./, (match) => match.toUpperCase()).trim();
+    return String(value).replace(/([A-Z])/g, " $1").replace(/[_-]/g, " ").replace(/^./, (match) => match.toUpperCase()).trim();
 }
 
-function isImageValue(value) {
-    return /\.(png|jpg|jpeg|gif|svg|webp)$/i.test(value);
-}
-
-function isMediaValue(value) {
-    return /\.(mp4|webm|ogg)$/i.test(value);
-}
-
-function buildFieldMarkup(field, currentValue) {
-    const serializedPath = field.path.join(".");
-    const type = fieldType(field.path, currentValue);
-    const safeValue = escapeHtml(currentValue);
-    const label = escapeHtml(elementLabel(field.path));
-    const pathLabel = escapeHtml(serializedPath);
-
-    let inputMarkup = `<input data-path="${pathLabel}" type="text" value="${safeValue}">`;
-    if (type === "textarea") {
-        inputMarkup = `<textarea data-path="${pathLabel}">${safeValue}</textarea>`;
+function fieldType(path, value) {
+    const key = String(path[path.length - 1]).toLowerCase();
+    if (isImageValue(value) || key.includes("image") || key.includes("poster")) {
+        return "image";
     }
 
-    let previewMarkup = `<p>${safeValue || "(empty text)"}</p>`;
-    if (isImageValue(currentValue)) {
-        previewMarkup = `<img src="${safeValue}" alt="${label} preview" loading="lazy">`;
-    } else if (isMediaValue(currentValue)) {
-        previewMarkup = `<video src="${safeValue}" muted preload="metadata" controls></video>`;
+    if (isMediaValue(value) || key === "src") {
+        return "media";
     }
 
-    return `<article class="admin-field angular-card"><label><span>${label}</span>${inputMarkup}</label><p class="admin-path">Element path: ${pathLabel}</p><div class="admin-placeholder"><span class="admin-placeholder__title">Editable Placeholder Preview</span>${previewMarkup}</div></article>`;
-}
+    if (typeof value === "string" && value.length > 100) {
+        return "textarea";
+    }
 
-function buildPagePreview(page) {
-    const meta = pageMeta[page];
-    const labels = pagePreviewLabels[page] || [];
-    const anchors = pagePreviewAnchors[page] || [];
-    const chips = labels.map((label) => `<span>${label}</span>`).join("");
-    const shots = anchors.map((shot) => {
-        const previewUrl = shot.anchor ? `${meta.url}#${shot.anchor}` : meta.url;
-        return `<article class="admin-shot"><div class="admin-shot__frame"><iframe title="${escapeHtml(meta.title)} ${escapeHtml(shot.label)} preview" src="${previewUrl}" loading="lazy"></iframe><span class="admin-shot__badge">${escapeHtml(shot.label)}</span></div><strong>${escapeHtml(shot.label)}</strong></article>`;
-    }).join("");
-    return `<div class="admin-preview"><div class="admin-preview__shots">${shots}</div><div class="admin-preview__meta"><strong>${escapeHtml(meta.title)}</strong><p>${escapeHtml(meta.description)}</p><div class="admin-preview__chips">${chips}</div></div></div>`;
-}
-
-function renderEditor() {
-    const mergedData = mergeContent(defaultDataset, readOverrides());
-    const fields = collectStringLeaves(defaultDataset);
-
-    const grouped = {};
-    pageOrder.forEach((page) => {
-        grouped[page] = [];
-    });
-
-    fields.forEach((field) => {
-        const page = pageCategory(field.path);
-        const currentValue = String(getByPath(mergedData, field.path) ?? "");
-        grouped[page].push({ field, currentValue });
-    });
-
-    const groupMarkup = pageOrder
-        .filter((page) => grouped[page].length > 0)
-        .map((page) => {
-            const meta = pageMeta[page];
-            const cards = grouped[page].map(({ field, currentValue }) => buildFieldMarkup(field, currentValue)).join("");
-            return `<details class="admin-group angular-card"${page === "home" ? " open" : ""}><summary><div><h2>${meta.title}</h2><p class="admin-group__meta">${meta.description} ${grouped[page].length} editable fields.</p></div><span class="admin-group__count">${grouped[page].length} items</span></summary>${buildPagePreview(page)}<div class="admin-group__fields">${cards}</div></details>`;
-        })
-        .join("");
-
-    groupsRoot.innerHTML = groupMarkup;
-}
-
-function saveChanges() {
-    const mergedData = mergeContent(defaultDataset, readOverrides());
-    const overrides = {};
-
-    groupsRoot.querySelectorAll("[data-path]").forEach((input) => {
-        const path = input.getAttribute("data-path").split(".").map((part) => (/^\d+$/.test(part) ? Number(part) : part));
-        const value = String(input.value || "");
-        setByPath(mergedData, path, value);
-    });
-
-    const fields = collectStringLeaves(defaultDataset);
-    fields.forEach((field) => {
-        const defaultValue = String(field.defaultValue);
-        const currentValue = String(getByPath(mergedData, field.path) ?? "");
-        if (currentValue !== defaultValue) {
-            setByPath(overrides, field.path, currentValue);
-        }
-    });
-
-    localStorage.setItem(PN_ADMIN_CONTENT_OVERRIDES_KEY, JSON.stringify(overrides));
-    statusMessage.textContent = "Changes saved. Refresh any site page to see updates.";
-    renderEditor();
-}
-
-function resetAllChanges() {
-    localStorage.removeItem(PN_ADMIN_CONTENT_OVERRIDES_KEY);
-    statusMessage.textContent = "All saved overrides were removed. Site content is back to defaults.";
-    renderEditor();
+    return "text";
 }
 
 function escapeHtml(value) {
@@ -372,4 +809,599 @@ function escapeHtml(value) {
         .replace(/>/g, "&gt;")
         .replace(/\"/g, "&quot;")
         .replace(/'/g, "&#39;");
+}
+
+function getMergedDataset() {
+    return mergeContent(defaultDataset, readOverrides());
+}
+
+function getActivePage() {
+    return pageConfig.find((page) => page.id === activePageId) || pageConfig[0];
+}
+
+function getActiveSection() {
+    const activePage = getActivePage();
+    return activePage.sections.find((section) => section.id === activeSectionId) || activePage.sections[0];
+}
+
+function pathToKey(path) {
+    return Array.isArray(path) ? path.join(".") : "";
+}
+
+function keyToPath(key) {
+    return key.split(".").map((part) => (/^\d+$/.test(part) ? Number(part) : part));
+}
+
+function pathsEqual(left, right) {
+    return pathToKey(left) === pathToKey(right);
+}
+
+function findFieldPathInSection(section, key) {
+    return section.fields.find((path) => pathToKey(path) === key) || null;
+}
+
+function getSelectedFieldPath(section = getActiveSection()) {
+    const selectedPath = selectedFieldPath || selectedElement?.path;
+    return selectedPath && findFieldPathInSection(section, pathToKey(selectedPath)) ? selectedPath : section.fields[0];
+}
+
+function getSelectedFieldType(path, value) {
+    return fieldType(path, String(value ?? ""));
+}
+
+function createSelectedElement(path, mergedData = getMergedDataset()) {
+    const resolvedPath = Array.isArray(path) ? path : keyToPath(String(path || ""));
+    const value = String(getByPath(mergedData, resolvedPath) ?? "");
+    return {
+        id: pathToKey(resolvedPath),
+        field_key: pathToKey(resolvedPath),
+        type: getSelectedFieldType(resolvedPath, value),
+        value,
+        label: fieldLabel(resolvedPath),
+        path: resolvedPath
+    };
+}
+
+function postPreviewMessage(message) {
+    const frameWindow = previewFrame?.contentWindow;
+    if (!frameWindow) {
+        return;
+    }
+
+    const targetOrigin = window.location.protocol === "file:" ? "*" : window.location.origin;
+
+    frameWindow.postMessage({
+        source: EDITOR_MESSAGE_SOURCE,
+        ...message
+    }, targetOrigin);
+}
+
+function setPreviewViewport(viewport) {
+    previewViewportMode = ["mobile", "tablet", "laptop", "wide"].includes(viewport) ? viewport : "mobile";
+    const viewportRoot = document.getElementById("admin-preview-viewport");
+    if (viewportRoot) {
+        viewportRoot.setAttribute("data-viewport", previewViewportMode);
+    }
+
+    document.querySelectorAll("[data-viewport]").forEach((button) => {
+        button.classList.toggle("is-active", button.getAttribute("data-viewport") === previewViewportMode);
+    });
+}
+
+function handlePreviewMessage(event) {
+    if (window.location.protocol !== "file:" && event.origin !== window.location.origin) {
+        return;
+    }
+
+    const data = event.data;
+    if (!data || data.source !== PREVIEW_MESSAGE_SOURCE) {
+        return;
+    }
+
+    if (data.action === "field-selected" && data.path) {
+        syncSelectedField(keyToPath(String(data.path)), { skipFocus: true });
+        document.body.classList.add("admin-element-focused");
+    }
+
+    if (data.action === "clear-selection") {
+        clearSelectedElement({ skipRender: true });
+        renderPortal();
+    }
+}
+
+function handlePreviewSelectionEvent(event) {
+    const detail = event.detail;
+    if (!detail || detail.source !== PREVIEW_MESSAGE_SOURCE) {
+        return;
+    }
+
+    if (detail.action === "field-selected" && detail.path) {
+        syncSelectedField(keyToPath(String(detail.path)), { skipFocus: true });
+        document.body.classList.add("admin-element-focused");
+    }
+
+    if (detail.action === "clear-selection") {
+        clearSelectedElement({ skipRender: true });
+        renderPortal();
+    }
+}
+
+function attachPreviewBridge() {
+    const frameDocument = previewFrame?.contentDocument;
+    if (!frameDocument) {
+        return;
+    }
+
+    if (!frameDocument.getElementById("pn-admin-preview-style")) {
+        const style = frameDocument.createElement("style");
+        style.id = "pn-admin-preview-style";
+        style.textContent = `[data-admin-field]{cursor:pointer;} .pn-admin-selected{outline:3px solid rgba(2,132,199,.95)!important;outline-offset:2px;}`;
+        frameDocument.head.appendChild(style);
+    }
+
+    if (frameDocument.body.dataset.adminBridgeReady === "true") {
+        return;
+    }
+
+    frameDocument.body.dataset.adminBridgeReady = "true";
+    frameDocument.body.addEventListener("click", (event) => {
+        const target = event.target.closest("[data-admin-field]");
+        if (!target) {
+            clearSelectedElement();
+            return;
+        }
+
+        event.preventDefault();
+        event.stopPropagation();
+
+        frameDocument.querySelectorAll(".pn-admin-selected").forEach((node) => node.classList.remove("pn-admin-selected"));
+        target.classList.add("pn-admin-selected");
+        syncSelectedField(keyToPath(target.getAttribute("data-admin-field")), { skipFocus: true });
+        document.body.classList.add("admin-element-focused");
+    }, true);
+}
+
+function setSelectedElement(path, options = {}) {
+    const section = getActiveSection();
+    const resolvedPath = findFieldPathInSection(section, pathToKey(path)) || findFieldPathInSection(section, pathToKey(path || []));
+    if (!resolvedPath) {
+        return;
+    }
+
+    selectedFieldPath = resolvedPath;
+    selectedElement = createSelectedElement(resolvedPath, options.mergedData || getMergedDataset());
+    document.body.classList.add("admin-element-focused");
+
+    const input = fieldListRoot.querySelector(`[data-path="${pathToKey(resolvedPath)}"]`);
+    if (input) {
+        activeFieldInput = input;
+    }
+
+    renderSelectedFieldInspector(getActivePage(), section, options.mergedData || getMergedDataset(), options);
+    postPreviewMessage({
+        action: "highlight-element",
+        element: selectedElement
+    });
+
+    if (input && !options.skipFocus) {
+        input.focus({ preventScroll: true });
+    }
+
+    highlightSelectedFieldCard();
+}
+
+function clearSelectedElement(options = {}) {
+    selectedElement = null;
+    selectedFieldPath = null;
+    document.body.classList.remove("admin-element-focused");
+    if (!options.skipRender) {
+        renderPortal();
+    }
+    postPreviewMessage({ action: "clear-highlight" });
+}
+
+function syncSelectedField(path, options = {}) {
+    setSelectedElement(path, options);
+}
+
+function matchesQuery(page, section, query, mergedData) {
+    if (!query) {
+        return true;
+    }
+
+    const haystack = [page.title, page.description, section.title, section.summary]
+        .concat(section.fields.map((path) => String(getByPath(mergedData, path) ?? "")))
+        .join(" ")
+        .toLowerCase();
+
+    return haystack.includes(query);
+}
+
+function renderPageList(pages) {
+    pageListRoot.innerHTML = pages.map((page) => {
+        const isActive = page.id === activePageId;
+        const fieldTotal = page.sections.reduce((total, section) => total + section.fields.length, 0);
+        return `<button type="button" class="admin-page-card${isActive ? " is-active" : ""}" data-page-id="${page.id}"><strong>${page.title}</strong><span>${page.sections.length} sections</span><span>${fieldTotal} fields</span><p>${page.description}</p></button>`;
+    }).join("");
+
+    pageListRoot.querySelectorAll("[data-page-id]").forEach((button) => {
+        button.addEventListener("click", () => {
+            persistCurrentSectionDraft({ announce: false, reRender: false, quiet: true });
+            activePageId = button.getAttribute("data-page-id");
+            activeSectionId = getActivePage().sections[0].id;
+            selectedFieldPath = getActiveSection().fields[0];
+            selectedElement = null;
+            document.body.classList.remove("admin-element-focused");
+            renderPortal();
+        });
+    });
+}
+
+function renderSectionList(page) {
+    sectionListRoot.innerHTML = page.sections.map((section) => {
+        const isActive = section.id === activeSectionId;
+        const fieldPreview = section.fields.slice(0, 3).map((path) => fieldLabel(path)).join(" · ");
+        return `<button type="button" class="admin-section-card${isActive ? " is-active" : ""}" data-section-id="${section.id}"><strong>${section.title}</strong><span>${section.fields.length} editable items</span><p>${section.summary}</p><small>${escapeHtml(fieldPreview)}${section.fields.length > 3 ? " · …" : ""}</small></button>`;
+    }).join("");
+
+    sectionListRoot.querySelectorAll("[data-section-id]").forEach((button) => {
+        button.addEventListener("click", () => {
+            persistCurrentSectionDraft({ announce: false, reRender: false, quiet: true });
+            activeSectionId = button.getAttribute("data-section-id");
+            selectedFieldPath = getActiveSection().fields[0];
+            selectedElement = null;
+            document.body.classList.remove("admin-element-focused");
+            renderPortal();
+        });
+    });
+}
+
+function renderAssetLibrary(section) {
+    const relevantAssets = section.fields
+        .map((path) => String(getByPath(defaultDataset, path) || getByPath(getMergedDataset(), path) || ""))
+        .filter((value) => isImageValue(value) || isMediaValue(value));
+
+    const imageChips = assetLibrary.images.map((asset) => {
+        const active = relevantAssets.includes(asset);
+        return `<button type="button" class="admin-asset-chip${active ? " is-active" : ""}" data-asset-kind="image" data-asset-value="${escapeHtml(asset)}">${escapeHtml(asset)}</button>`;
+    }).join("");
+
+    const mediaChips = assetLibrary.media.map((asset) => {
+        const active = relevantAssets.includes(asset);
+        return `<button type="button" class="admin-asset-chip${active ? " is-active" : ""}" data-asset-kind="media" data-asset-value="${escapeHtml(asset)}">${escapeHtml(asset)}</button>`;
+    }).join("");
+
+    return `
+        <div class="admin-asset-library__group">
+            <strong>Images</strong>
+            <div class="admin-asset-chip-list">${imageChips}</div>
+        </div>
+        <div class="admin-asset-library__group">
+            <strong>Media</strong>
+            <div class="admin-asset-chip-list">${mediaChips}</div>
+        </div>
+    `;
+}
+
+function renderFieldCard(path, value) {
+    const type = fieldType(path, value);
+    const pathString = path.join(".");
+    const label = escapeHtml(fieldLabel(path));
+    const safeValue = escapeHtml(value);
+    const listId = type === "image" ? "admin-image-assets" : type === "media" ? "admin-media-assets" : "";
+
+    let inputMarkup = `<input data-path="${escapeHtml(pathString)}" data-field-type="${type}" ${listId ? `list="${listId}"` : ""} type="text" value="${safeValue}" placeholder="${type === "image" ? "Choose or type an image file" : type === "media" ? "Choose or type a media file" : "Enter text"}">`;
+    if (type === "textarea") {
+        inputMarkup = `<textarea data-path="${escapeHtml(pathString)}" data-field-type="${type}" placeholder="Enter or paste section copy">${safeValue}</textarea>`;
+    }
+
+    let previewMarkup = `<p>${safeValue || "(empty text)"}</p>`;
+    if (type === "image") {
+        previewMarkup = `<img src="${safeValue}" alt="${label} preview" loading="lazy">`;
+    } else if (type === "media") {
+        previewMarkup = `<video src="${safeValue}" muted preload="metadata" controls></video>`;
+    }
+
+    const isSelected = pathToKey(path) === pathToKey(getSelectedFieldPath());
+    return `<article class="admin-field angular-card${isSelected ? " is-selected" : ""}" data-field-card="${escapeHtml(pathString)}"><div class="admin-field__header"><label><span data-field-kind="${escapeHtml(type)}">${label}</span>${inputMarkup}</label><p class="admin-path">${escapeHtml(pathString)}</p></div><div class="admin-placeholder"><span class="admin-placeholder__title">Preview</span>${previewMarkup}</div></article>`;
+}
+
+function renderSelectedFieldInspector(page, section, mergedData) {
+    const path = getSelectedFieldPath(section);
+    const value = String(getByPath(mergedData, path) ?? "");
+    const type = getSelectedFieldType(path, value);
+    const label = escapeHtml(fieldLabel(path));
+    const key = pathToKey(path);
+
+    if (selectedFieldKind) {
+        selectedFieldKind.textContent = type;
+    }
+
+    if (!selectedFieldEditor) {
+        return;
+    }
+
+    const previewMarkup = type === "image"
+        ? `<img src="${escapeHtml(value)}" alt="${label} preview">`
+        : type === "media"
+            ? `<video src="${escapeHtml(value)}" muted controls preload="metadata"></video>`
+            : `<p>${escapeHtml(value || "(empty text)")}</p>`;
+
+    const fileActionMarkup = type === "image" || type === "media"
+        ? `<div class="admin-selected-field__actions"><button class="button button--secondary angular-card" type="button" data-action="choose-file">Upload file</button><button class="button button--secondary angular-card" type="button" data-action="reset-field">Reset field</button><input id="admin-selected-file-input" type="file" accept="${type === "image" ? "image/*" : "video/*"}"></div>`
+        : `<div class="admin-selected-field__actions"><button class="button button--secondary angular-card" type="button" data-action="reset-field">Reset field</button></div>`;
+
+    const focusActions = selectedElement
+        ? `<div class="admin-selected-field__actions"><button class="button button--secondary angular-card admin-selected-field__back" type="button" data-action="back-overview">Back to overview</button><button class="button button--secondary angular-card" type="button" data-action="clear-selection">Exit selection</button></div>`
+        : "";
+
+    const currentInput = type === "textarea"
+        ? `<textarea data-path="${escapeHtml(key)}" data-field-type="${escapeHtml(type)}">${escapeHtml(value)}</textarea>`
+        : `<input data-path="${escapeHtml(key)}" data-field-type="${escapeHtml(type)}" type="text" value="${escapeHtml(value)}">`;
+
+    selectedFieldEditor.innerHTML = `
+        <div class="admin-selected-field__preview">
+            <strong>${label}</strong>
+            ${previewMarkup}
+        </div>
+        ${focusActions}
+        <label class="admin-field__header">
+            <span data-field-kind="${escapeHtml(type)}">Edit selected content</span>
+            ${currentInput}
+        </label>
+        ${fileActionMarkup}
+    `;
+
+    const editorInput = selectedFieldEditor.querySelector("[data-path]");
+    if (editorInput) {
+        editorInput.addEventListener("input", () => {
+            applyFieldValue(path, String(editorInput.value || ""));
+            queueAutosave();
+        });
+    }
+
+    const fileInput = selectedFieldEditor.querySelector("#admin-selected-file-input");
+    if (fileInput) {
+        fileInput.addEventListener("change", async () => {
+            const file = fileInput.files?.[0];
+            if (!file) {
+                return;
+            }
+
+            const dataUrl = await fileToDataUrl(file);
+            applyFieldValue(path, dataUrl);
+            queueAutosave();
+        });
+    }
+
+    selectedFieldEditor.querySelectorAll("[data-action]").forEach((button) => {
+        button.addEventListener("click", () => {
+            const action = button.getAttribute("data-action");
+            if (action === "choose-file") {
+                fileInput?.click();
+            }
+            if (action === "reset-field") {
+                revertSelectedField(path);
+            }
+            if (action === "back-overview") {
+                selectedElement = null;
+                document.body.classList.remove("admin-element-focused");
+                renderPortal();
+            }
+            if (action === "clear-selection") {
+                clearSelectedElement();
+            }
+        });
+    });
+}
+
+function fileToDataUrl(file) {
+    return new Promise((resolve, reject) => {
+        const reader = new FileReader();
+        reader.onload = () => resolve(String(reader.result || ""));
+        reader.onerror = () => reject(reader.error);
+        reader.readAsDataURL(file);
+    });
+}
+
+function applyFieldValue(path, value) {
+    const input = fieldListRoot.querySelector(`[data-path="${pathToKey(path)}"]`);
+    if (input) {
+        input.value = value;
+    }
+
+    if (selectedFieldEditor) {
+        const editorInput = selectedFieldEditor.querySelector("[data-path]");
+        if (editorInput && editorInput !== input) {
+            editorInput.value = value;
+        }
+    }
+
+    statusMessage.textContent = "Unsaved changes. Save the section when you are done.";
+}
+
+function revertSelectedField(path) {
+    const section = getActiveSection();
+    const defaultValue = String(getByPath(defaultDataset, path) ?? "");
+    applyFieldValue(path, defaultValue);
+    renderPortal();
+}
+
+function highlightSelectedFieldCard() {
+    fieldListRoot.querySelectorAll(".admin-field").forEach((card) => {
+        card.classList.toggle("is-selected", card.getAttribute("data-field-card") === pathToKey(getSelectedFieldPath()));
+    });
+}
+
+function renderPreview(page, section) {
+    const previewUrl = section.previewAnchor ? `${page.url}#${section.previewAnchor}` : page.url;
+    previewFrame.src = previewUrl;
+    previewCaption.textContent = `${page.title} · ${section.title}`;
+    previewLinks.innerHTML = `<a href="${page.url}" target="_blank" rel="noopener noreferrer">Open ${page.title} page</a><a href="${previewUrl}" target="_blank" rel="noopener noreferrer">Open selected section</a>`;
+    setPreviewViewport(previewViewportMode);
+}
+
+function renderSectionWorkbench(page, section, mergedData) {
+    pageBadge.textContent = page.title;
+    sectionTitle.textContent = section.title;
+    sectionSummary.textContent = section.summary;
+    sectionFieldCount.textContent = `${section.fields.length} fields`;
+    sectionPreviewLabel.textContent = section.previewLabel || page.previewLabel;
+
+    thumbsRoot.innerHTML = renderAssetLibrary(section);
+    fieldListRoot.innerHTML = section.fields.map((path) => renderFieldCard(path, String(getByPath(mergedData, path) ?? ""))).join("");
+    renderSelectedFieldInspector(page, section, mergedData);
+
+    fieldListRoot.querySelectorAll("[data-path]").forEach((input) => {
+        input.addEventListener("focus", () => {
+            activeFieldInput = input;
+            selectedFieldPath = keyToPath(input.getAttribute("data-path"));
+            selectedElement = null;
+            document.body.classList.remove("admin-element-focused");
+            renderSelectedFieldInspector(page, section, mergedData);
+        });
+        input.addEventListener("input", () => {
+            activeFieldInput = input;
+            selectedFieldPath = keyToPath(input.getAttribute("data-path"));
+            selectedElement = null;
+            document.body.classList.remove("admin-element-focused");
+            queueAutosave();
+        });
+    });
+
+    thumbsRoot.querySelectorAll("[data-asset-value]").forEach((button) => {
+        button.addEventListener("click", () => {
+            const assetValue = button.getAttribute("data-asset-value");
+            const assetKind = button.getAttribute("data-asset-kind");
+            const selectedPath = getSelectedFieldPath(section);
+            const selectedValue = String(getByPath(mergedData, selectedPath) ?? "");
+            if (getSelectedFieldType(selectedPath, selectedValue) === assetKind) {
+                applyFieldValue(selectedPath, assetValue);
+                if (activeFieldInput) {
+                    activeFieldInput.value = assetValue;
+                    activeFieldInput.dispatchEvent(new Event("input", { bubbles: true }));
+                }
+                renderSelectedFieldInspector(page, section, getMergedDataset());
+                queueAutosave();
+            }
+        });
+    });
+
+    renderPreview(page, section);
+    highlightSelectedFieldCard();
+}
+
+function queueAutosave() {
+    window.clearTimeout(autosaveTimer);
+    statusMessage.textContent = "Saving changes...";
+    autosaveTimer = window.setTimeout(() => {
+        persistCurrentSectionDraft({ announce: true, reRender: false });
+    }, 180);
+}
+
+function collectOverridesFromInputs() {
+    const overrides = {};
+    fieldListRoot.querySelectorAll("[data-path]").forEach((input) => {
+        const path = input.getAttribute("data-path").split(".").map((part) => (/^\d+$/.test(part) ? Number(part) : part));
+        setByPath(overrides, path, String(input.value || ""));
+    });
+    return overrides;
+}
+
+function unsetByPath(target, path) {
+    if (!path.length) {
+        return;
+    }
+
+    let current = target;
+    for (let index = 0; index < path.length - 1; index += 1) {
+        current = current[path[index]];
+        if (current == null) {
+            return;
+        }
+    }
+
+    const finalPart = path[path.length - 1];
+    if (current && Object.prototype.hasOwnProperty.call(current, finalPart)) {
+        delete current[finalPart];
+    }
+}
+
+function persistCurrentSectionDraft(options = {}) {
+    const { announce = false, reRender = false, quiet = false } = options;
+    const overrides = readOverrides();
+    const section = getActiveSection();
+    const currentValues = collectOverridesFromInputs();
+
+    section.fields.forEach((path) => {
+        const currentValue = getByPath(currentValues, path);
+        const defaultValue = getByPath(defaultDataset, path);
+        if (String(currentValue ?? "") === String(defaultValue ?? "")) {
+            return;
+        }
+
+        setByPath(overrides, path, currentValue);
+    });
+
+    localStorage.setItem(PN_ADMIN_CONTENT_OVERRIDES_KEY, JSON.stringify(overrides));
+
+    if (!quiet) {
+        statusMessage.textContent = announce ? `Saved ${section.title} for ${getActivePage().title}.` : "Changes saved.";
+    }
+
+    if (reRender) {
+        renderPortal();
+    }
+
+    return overrides;
+}
+
+function revertCurrentSection() {
+    window.clearTimeout(autosaveTimer);
+    const overrides = readOverrides();
+    const section = getActiveSection();
+
+    section.fields.forEach((path) => {
+        unsetByPath(overrides, path);
+    });
+
+    localStorage.setItem(PN_ADMIN_CONTENT_OVERRIDES_KEY, JSON.stringify(overrides));
+    statusMessage.textContent = `Reverted ${section.title} back to the previous saved state.`;
+    renderPortal();
+}
+
+function renderPortal() {
+    const mergedData = getMergedDataset();
+    const query = searchInput.value.trim().toLowerCase();
+
+    const matchingPages = pageConfig.map((page) => ({
+        ...page,
+        sections: page.sections.filter((section) => matchesQuery(page, section, query, mergedData))
+    })).filter((page) => page.sections.length > 0 || !query);
+
+    if (!matchingPages.some((page) => page.id === activePageId)) {
+        activePageId = matchingPages[0]?.id || pageConfig[0].id;
+    }
+
+    const activePage = getActivePage();
+    if (!activePage.sections.some((section) => section.id === activeSectionId)) {
+        activeSectionId = activePage.sections[0].id;
+    }
+
+    renderPageList(matchingPages);
+    renderSectionList(activePage);
+    renderSectionWorkbench(activePage, getActiveSection(), mergedData);
+
+    pageCount.textContent = `${matchingPages.length} pages`;
+    sectionCount.textContent = `${activePage.sections.length} sections`;
+}
+
+function saveChanges() {
+    persistCurrentSectionDraft({ announce: true, reRender: true });
+}
+
+function resetAllChanges() {
+    localStorage.removeItem(PN_ADMIN_CONTENT_OVERRIDES_KEY);
+    statusMessage.textContent = "All content overrides were cleared.";
+    renderPortal();
 }

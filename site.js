@@ -533,6 +533,10 @@ function renderTopBar(topBar) {
     return `<div class="top-bar"><div class="container top-bar__inner"><span class="top-bar__item">Address: ${topBar.address}</span><span class="top-bar__item">Phone: <a href="${topBar.phoneHref}">${topBar.phoneDisplay}</a></span><span class="top-bar__item">Email: <a href="mailto:${topBar.email}">${topBar.email}</a></span></div></div>`;
 }
 
+function adminFieldAttrs(path, kind = "text") {
+    return `data-admin-field="${path.join(".")}" data-admin-kind="${kind}"`;
+}
+
 function renderHeader(brand, navigation, page) {
     const links = navigation.map((item) => `<a class="${item.id === page ? "is-active" : ""}" href="${item.href}">${item.label}</a>`).join("");
     return `<header class="site-header"><div class="container site-header__inner"><a class="brand" href="index.html" aria-label="PN Medical homepage"><img class="brand__logo" src="logo.png" alt="PN Medical logo"><span class="brand__tagline">${brand.tagline}</span></a><button class="menu-toggle" type="button" aria-expanded="false" aria-controls="primary-nav" aria-label="Toggle navigation menu"><span></span><span></span><span></span></button><nav id="primary-nav" class="site-nav" aria-label="Primary navigation">${links}</nav></div></header>`;
@@ -566,42 +570,42 @@ function renderHero(hero, mediaAssets) {
     const metricCards = hero.metrics.map((metric) => `<li class="hero__metric-pill angular-card">${metric}</li>`).join("");
     const primaryVideo = mediaAssets[0];
     const videoPoster = primaryVideo.poster || "logo.png";
-    return `<section class="hero angular-hero-banner"><div class="container hero__layout"><div class="hero__copy"><span class="eyebrow">${hero.badge}</span><h1>${hero.title} <span>${hero.accent}</span></h1><p>${hero.description}</p><div class="hero__actions"><a class="button button--primary angular-card" href="${hero.primaryCta.href}">${hero.primaryCta.label}</a><a class="button button--secondary angular-card" href="${hero.secondaryCta.href}">${hero.secondaryCta.label}</a></div><ul class="hero__metrics-list">${metricCards}</ul></div><aside class="hero__panel angular-card" aria-label="Featured video and summary"><div class="hero__showcase"><article class="hero__video-card hero__video-card--main angular-card"><video controls preload="metadata" poster="${videoPoster}"><source src="${primaryVideo.src}" type="video/mp4"></video><div class="hero__video-copy"><strong>${primaryVideo.title}</strong><span>${primaryVideo.description}</span></div></article><article class="hero__insight-card angular-card"><strong>${hero.supportTitle}</strong><ul>${hero.supportPoints.map((point) => `<li>${point}</li>`).join("")}</ul></article></div></aside></div></section>`;
+    return `<section class="hero angular-hero-banner"><div class="container hero__layout"><div class="hero__copy"><span class="eyebrow" ${adminFieldAttrs(["hero", "badge"])}>${hero.badge}</span><h1 ${adminFieldAttrs(["hero", "title"])}>${hero.title} <span ${adminFieldAttrs(["hero", "accent"])}>${hero.accent}</span></h1><p ${adminFieldAttrs(["hero", "description"])}>${hero.description}</p><div class="hero__actions"><a class="button button--primary angular-card" href="${hero.primaryCta.href}" ${adminFieldAttrs(["hero", "primaryCta", "label"])}> ${hero.primaryCta.label}</a><a class="button button--secondary angular-card" href="${hero.secondaryCta.href}" ${adminFieldAttrs(["hero", "secondaryCta", "label"])}>${hero.secondaryCta.label}</a></div><ul class="hero__metrics-list">${metricCards}</ul></div><aside class="hero__panel angular-card" aria-label="Featured video and summary"><div class="hero__showcase"><article class="hero__video-card hero__video-card--main angular-card"><video controls preload="metadata" poster="${videoPoster}" ${adminFieldAttrs(["mediaAssets", 0, "src"], "media")}><source src="${primaryVideo.src}" type="video/mp4"></video><div class="hero__video-copy"><strong ${adminFieldAttrs(["mediaAssets", 0, "title"])}>${primaryVideo.title}</strong><span ${adminFieldAttrs(["mediaAssets", 0, "description"])}>${primaryVideo.description}</span></div></article><article class="hero__insight-card angular-card"><strong ${adminFieldAttrs(["hero", "supportTitle"])}>${hero.supportTitle}</strong><ul>${hero.supportPoints.map((point, index) => `<li ${adminFieldAttrs(["hero", "supportPoints", index])}>${point}</li>`).join("")}</ul></article></div></aside></div></section>`;
 }
 
 function renderFlyerSpotlight(flyerSpotlight) {
     const contactLines = flyerSpotlight.contactLines.map((item) => `<li>${item}</li>`).join("");
-    return `<section class="section section--tight flyer-spotlight"><div class="container flyer-spotlight__layout"><article class="flyer-spotlight__main angular-card"><div class="flyer-spotlight__copy"><h2>${flyerSpotlight.title}</h2><p>${flyerSpotlight.description}</p><p class="flyer-spotlight__emphasis">${flyerSpotlight.emphasis}</p></div><div class="flyer-spotlight__protocol angular-card"><h3>${flyerSpotlight.panelTitle}</h3><img src="hygiene-steps.svg" alt="Hand hygiene usage guidance illustration"><p class="flyer-spotlight__protocol-footer">${flyerSpotlight.panelFooter}</p></div><p class="flyer-spotlight__disclaimer">${flyerSpotlight.disclaimer}</p></article><aside class="flyer-spotlight__cta angular-card"><img class="flyer-spotlight__badge" src="flyer-germ-badge.svg" alt="Kills 99.9% of tested germs badge"><h3>${flyerSpotlight.ctaTitle}</h3><ul>${contactLines}</ul><a class="button button--primary angular-card" href="contact.html">Place an Inquiry</a></aside></div></section>`;
+    return `<section class="section section--tight flyer-spotlight"><div class="container flyer-spotlight__layout"><article class="flyer-spotlight__main angular-card"><div class="flyer-spotlight__copy"><h2 ${adminFieldAttrs(["flyerSpotlight", "title"])}>${flyerSpotlight.title}</h2><p ${adminFieldAttrs(["flyerSpotlight", "description"])}>${flyerSpotlight.description}</p><p class="flyer-spotlight__emphasis" ${adminFieldAttrs(["flyerSpotlight", "emphasis"])}>${flyerSpotlight.emphasis}</p></div><div class="flyer-spotlight__protocol angular-card"><h3 ${adminFieldAttrs(["flyerSpotlight", "panelTitle"])}>${flyerSpotlight.panelTitle}</h3><img src="hygiene-steps.svg" alt="Hand hygiene usage guidance illustration" ${adminFieldAttrs(["flyerSpotlight", "panelTitle"], "image")}></div><p class="flyer-spotlight__protocol-footer" ${adminFieldAttrs(["flyerSpotlight", "panelFooter"])}>${flyerSpotlight.panelFooter}</p><p class="flyer-spotlight__disclaimer" ${adminFieldAttrs(["flyerSpotlight", "disclaimer"])}>${flyerSpotlight.disclaimer}</p></article><aside class="flyer-spotlight__cta angular-card"><img class="flyer-spotlight__badge" src="flyer-germ-badge.svg" alt="Kills 99.9% of tested germs badge" ${adminFieldAttrs(["flyerSpotlight", "ctaTitle"], "image")}><h3 ${adminFieldAttrs(["flyerSpotlight", "ctaTitle"])}>${flyerSpotlight.ctaTitle}</h3><ul>${flyerSpotlight.contactLines.map((item, index) => `<li ${adminFieldAttrs(["flyerSpotlight", "contactLines", index])}>${item}</li>`).join("")}</ul><a class="button button--primary angular-card" href="contact.html" ${adminFieldAttrs(["flyerSpotlight", "ctaTitle"])}>Place an Inquiry</a></aside></div></section>`;
 }
 
 function renderPageIntro(intro, visual = null) {
     const sideMarkup = visual
-        ? `<div class="page-intro__side"><p>${intro.description}</p><article class="context-visual-card angular-card"><img src="${visual.src}" alt="${visual.alt}"><h3>${visual.title}</h3></article></div>`
-        : `<p>${intro.description}</p>`;
+        ? `<div class="page-intro__side"><p ${adminFieldAttrs(["pageIntro", currentPage], "text")}>${intro.description}</p><article class="context-visual-card angular-card"><img src="${visual.src}" alt="${visual.alt}" ${adminFieldAttrs(["accreditationVisuals", 0, "src"], "image")}><h3 ${adminFieldAttrs(["accreditationVisuals", 0, "title"])}>${visual.title}</h3></article></div>`
+        : `<p ${adminFieldAttrs(["pageIntro", currentPage], "text")}>${intro.description}</p>`;
 
-    return `<section class="page-intro"><div class="container page-intro__layout"><div><span class="eyebrow">${intro.eyebrow}</span><h1>${intro.title}</h1></div>${sideMarkup}</div></section>`;
+    return `<section class="page-intro"><div class="container page-intro__layout"><div><span class="eyebrow" ${adminFieldAttrs(["pageIntro", currentPage, "eyebrow"])}>${intro.eyebrow}</span><h1 ${adminFieldAttrs(["pageIntro", currentPage, "title"])}>${intro.title}</h1></div>${sideMarkup}</div></section>`;
 }
 
 function renderHomeHighlights(items) {
-    const cards = items.map((item) => `<article class="overview-card angular-card"><h3>${item.title}</h3><p>${item.description}</p><a href="${item.href}">Learn more</a></article>`).join("");
+    const cards = items.map((item, index) => `<article class="overview-card angular-card"><h3 ${adminFieldAttrs(["homeHighlights", index, "title"])}>${item.title}</h3><p ${adminFieldAttrs(["homeHighlights", index, "description"])}>${item.description}</p><a href="${item.href}" ${adminFieldAttrs(["homeHighlights", index, "href"])}>Learn more</a></article>`).join("");
     return `<section class="section section--tight"><div class="container"><div class="section-heading"><div><span class="eyebrow">Core Advantages</span><h2>Clean product lines with clear facility use cases.</h2></div><p>The site now separates browsing by intent, so visitors can move from the homepage into products, accreditation, support, or contact without scrolling through a single long document.</p></div><div class="overview-grid">${cards}</div></div></section>`;
 }
 
 function renderHomeProductPreview() {
-    return `<section class="section section--tight product-preview"><div class="container"><div class="section-heading"><div><span class="eyebrow">Homepage Structure</span><h2>Use placeholder blocks to keep the header areas and field areas consistent.</h2></div><p>The home page now uses a lighter placeholder pattern instead of the heavy promo strip, so the structure stays visible without adding visual weight.</p></div><div class="preview-links"><a class="preview-link preview-link--placeholder angular-card" href="products.html"><span class="preview-link__badge">Header area</span><strong>Primary homepage banner</strong><span>Reserved for the hero header, supporting copy, and key call-to-action field.</span></a><a class="preview-link preview-link--placeholder angular-card" href="products.html"><span class="preview-link__badge">Field area</span><strong>Homepage content field</strong><span>Reserved for the supporting blocks that appear below the hero on the rest of the page.</span></a></div></div></section>`;
+    return `<section class="section section--tight product-preview"><div class="container"><div class="section-heading"><div><span class="eyebrow" ${adminFieldAttrs(["pageIntro", "products", "eyebrow"])}>Featured Range</span><h2 ${adminFieldAttrs(["pageIntro", "products", "title"])}>Start with the touch-free system and its refill formats.</h2></div><p ${adminFieldAttrs(["pageIntro", "products", "description"])}>The products area is now its own page, with detailed sections for dispenser hardware and refill consumables.</p></div><div class="preview-links"><a class="preview-link angular-card" href="products.html" ${adminFieldAttrs(["pageIntro", "products", "title"])}><strong ${adminFieldAttrs(["pageIntro", "products", "title"])}>Touch Free Dispensers</strong><span ${adminFieldAttrs(["pageIntro", "products", "description"])}>Plastic and stainless steel systems for shared environments.</span></a><a class="preview-link angular-card" href="products.html" ${adminFieldAttrs(["pageIntro", "products", "title"])}><strong ${adminFieldAttrs(["pageIntro", "accreditation", "title"])}>1 Litre Refill Bags</strong><span ${adminFieldAttrs(["pageIntro", "accreditation", "description"])}>Waterless isopropanol sanitiser with tested 99.9% efficacy claims.</span></a></div></div></section>`;
 }
 
 function renderAccreditationSummary(credibility) {
     const certifications = credibility.certifications.map((item) => `<li>${item}</li>`).join("");
-    return `<section class="section section--tight"><div class="container summary-panel angular-card"><div><span class="eyebrow">Accreditation Snapshot</span><h2>${credibility.title}</h2><p>${credibility.summary}</p></div><ul class="credentials-list">${certifications}</ul></div></section>`;
+    return `<section class="section section--tight"><div class="container summary-panel angular-card"><div><span class="eyebrow" ${adminFieldAttrs(["credibility", "eyebrow"])}>Accreditation Snapshot</span><h2 ${adminFieldAttrs(["credibility", "title"])}>${credibility.title}</h2><p ${adminFieldAttrs(["credibility", "summary"])}>${credibility.summary}</p></div><ul class="credentials-list">${certifications}</ul></div></section>`;
 }
 
 function renderHomeContactCta() {
-    return `<section class="section section--tight"><div class="container callout-panel angular-card"><div><span class="eyebrow">Next Step</span><h2>Need a dispenser or refill recommendation for your facility?</h2><p>Move straight to the contact page to request a quote or discuss rollout requirements.</p></div><a class="button button--primary angular-card" href="contact.html">Contact PN Medical</a></div></section>`;
+    return `<section class="section section--tight"><div class="container callout-panel angular-card"><div><span class="eyebrow" ${adminFieldAttrs(["inquiry", "title"])}>Next Step</span><h2 ${adminFieldAttrs(["inquiry", "title"])}>Need a dispenser or refill recommendation for your facility?</h2><p ${adminFieldAttrs(["inquiry", "copy"])}>Move straight to the contact page to request a quote or discuss rollout requirements.</p></div><a class="button button--primary angular-card" href="contact.html" ${adminFieldAttrs(["hero", "primaryCta", "label"])}>Contact PN Medical</a></div></section>`;
 }
 
 function renderAccreditationGallery(images) {
-    const cards = images.map((image) => `<article class="accreditation-gallery__card angular-card"><img src="${image.src}" alt="${image.alt}"><div class="accreditation-gallery__copy"><h3>${image.title}</h3><p>${image.caption}</p></div></article>`).join("");
+    const cards = images.map((image, index) => `<article class="accreditation-gallery__card angular-card"><img src="${image.src}" alt="${image.alt}" ${adminFieldAttrs(["accreditationVisuals", index, "src"], "image")}><div class="accreditation-gallery__copy"><h3 ${adminFieldAttrs(["accreditationVisuals", index, "title"])}>${image.title}</h3><p ${adminFieldAttrs(["accreditationVisuals", index, "caption"])}>${image.caption}</p></div></article>`).join("");
     return `<section class="section section--tight"><div class="container"><div class="section-heading"><div><span class="eyebrow">Visual Evidence</span><h2>Product visuals supporting accreditation positioning.</h2></div><p>These reference visuals show the core hardware, refill formats, and portable hygiene products that support PN Medical's quality and compliance profile.</p></div><div class="accreditation-gallery">${cards}</div></div></section>`;
 }
 
@@ -609,10 +613,10 @@ function renderCredibility(credibility, visual = null) {
     const audiences = credibility.audiences.map((item) => `<li>${item}</li>`).join("");
     const certifications = credibility.certifications.map((item) => `<li>${item}</li>`).join("");
     const sideMarkup = visual
-        ? `<div class="section-heading__side"><p>${credibility.summary}</p><article class="context-visual-card angular-card"><img src="${visual.src}" alt="${visual.alt}"><h3>${visual.title}</h3></article></div>`
-        : `<p>${credibility.summary}</p>`;
+        ? `<div class="section-heading__side"><p ${adminFieldAttrs(["credibility", "summary"])}>${credibility.summary}</p><article class="context-visual-card angular-card"><img src="${visual.src}" alt="${visual.alt}" ${adminFieldAttrs(["accreditationVisuals", 0, "src"], "image")}><h3 ${adminFieldAttrs(["accreditationVisuals", 0, "title"])}>${visual.title}</h3></article></div>`
+        : `<p ${adminFieldAttrs(["credibility", "summary"])}>${credibility.summary}</p>`;
 
-    return `<section class="section"><div class="container"><div class="section-heading"><div><span class="eyebrow">${credibility.eyebrow}</span><h2>${credibility.title}</h2></div>${sideMarkup}</div><div class="credibility"><article class="panel-card angular-card"><h3>Facility Fit</h3><ul class="stats-list">${audiences}</ul></article><article class="panel-card panel-card--accent angular-card"><h3>${credibility.accreditationTitle}</h3><p>${credibility.accreditationSummary}</p><ul class="credentials-list">${certifications}</ul></article></div></div></section>`;
+    return `<section class="section"><div class="container"><div class="section-heading"><div><span class="eyebrow" ${adminFieldAttrs(["credibility", "eyebrow"])}>${credibility.eyebrow}</span><h2 ${adminFieldAttrs(["credibility", "title"])}>${credibility.title}</h2></div>${sideMarkup}</div><div class="credibility"><article class="panel-card angular-card"><h3 ${adminFieldAttrs(["credibility", "title"])}>Facility Fit</h3><ul class="stats-list">${credibility.audiences.map((item, index) => `<li ${adminFieldAttrs(["credibility", "audiences", index])}>${item}</li>`).join("")}</ul></article><article class="panel-card panel-card--accent angular-card"><h3 ${adminFieldAttrs(["credibility", "accreditationTitle"])}>${credibility.accreditationTitle}</h3><p ${adminFieldAttrs(["credibility", "accreditationSummary"])}>${credibility.accreditationSummary}</p><ul class="credentials-list">${certifications}</ul></article></div></div></section>`;
 }
 
 function renderProducts(filters) {
@@ -621,7 +625,7 @@ function renderProducts(filters) {
 }
 
 function renderProductQuickLinks(links) {
-    const items = links.map((item) => `<a class="product-jump-link angular-card" href="${item.href}">${item.label}</a>`).join("");
+    const items = links.map((item, index) => `<a class="product-jump-link angular-card" href="${item.href}" ${adminFieldAttrs(["productQuickLinks", index, "label"])}>${item.label}</a>`).join("");
     return `<section class="product-jump-panel angular-card"><h3>Quick Product Navigation</h3><div class="product-jump-links">${items}</div></section>`;
 }
 
@@ -630,32 +634,82 @@ function renderProductFeature(feature) {
     const tagsMarkup = feature.tags.map((item) => `<span>${item}</span>`).join("");
     const warningMarkup = feature.warning ? `<div class="product-feature__warning angular-card"><strong>Warning</strong><p>${feature.warning}</p></div>` : "";
     const idAttribute = feature.id ? ` id="${feature.id}"` : "";
-    return `<article${idAttribute} class="product-feature angular-card"><div class="product-feature__layout"><div class="product-feature__content"><span class="eyebrow">${feature.eyebrow}</span><h3>${feature.title}</h3><p class="product-feature__lede">${feature.intro}</p><div class="product-feature__lists">${listMarkup}</div><div class="product-feature__benefits angular-card">${tagsMarkup}</div><p>${feature.compliance}</p>${warningMarkup}</div><div class="product-feature__visual angular-card"><img src="${feature.imageSrc}" alt="${feature.imageAlt}"></div></div></article>`;
+    return `<article${idAttribute} class="product-feature angular-card"><div class="product-feature__layout"><div class="product-feature__content"><span class="eyebrow" ${adminFieldAttrs([feature.id === "home" ? "touchFreeFeature" : feature.id === "profile" ? "refillFeature" : feature.id === "messages" ? "soapFeature" : feature.id === "settings" ? "sprayBottleFeature" : "reelClipFeature", "eyebrow"])}>${feature.eyebrow}</span><h3 ${adminFieldAttrs([feature.id === "home" ? "touchFreeFeature" : feature.id === "profile" ? "refillFeature" : feature.id === "messages" ? "soapFeature" : feature.id === "settings" ? "sprayBottleFeature" : "reelClipFeature", "title"])}>${feature.title}</h3><p class="product-feature__lede" ${adminFieldAttrs([feature.id === "home" ? "touchFreeFeature" : feature.id === "profile" ? "refillFeature" : feature.id === "messages" ? "soapFeature" : feature.id === "settings" ? "sprayBottleFeature" : "reelClipFeature", "intro"])}>${feature.intro}</p><div class="product-feature__lists">${feature.listGroups.map((group, groupIndex) => `<section class="product-feature__list angular-card"><h4 ${adminFieldAttrs([feature.id === "home" ? "touchFreeFeature" : feature.id === "profile" ? "refillFeature" : feature.id === "messages" ? "soapFeature" : feature.id === "settings" ? "sprayBottleFeature" : "reelClipFeature", "listGroups", groupIndex, "title"])}>${group.title}</h4><ul>${group.items.map((item, itemIndex) => `<li ${adminFieldAttrs([feature.id === "home" ? "touchFreeFeature" : feature.id === "profile" ? "refillFeature" : feature.id === "messages" ? "soapFeature" : feature.id === "settings" ? "sprayBottleFeature" : "reelClipFeature", "listGroups", groupIndex, "items", itemIndex])}>${item}</li>`).join("")}</ul></section>`).join("")}</div><div class="product-feature__benefits angular-card">${feature.tags.map((item, tagIndex) => `<span ${adminFieldAttrs([feature.id === "home" ? "touchFreeFeature" : feature.id === "profile" ? "refillFeature" : feature.id === "messages" ? "soapFeature" : feature.id === "settings" ? "sprayBottleFeature" : "reelClipFeature", "tags", tagIndex])}>${item}</span>`).join("")}</div><p ${adminFieldAttrs([feature.id === "home" ? "touchFreeFeature" : feature.id === "profile" ? "refillFeature" : feature.id === "messages" ? "soapFeature" : feature.id === "settings" ? "sprayBottleFeature" : "reelClipFeature", "compliance"])}>${feature.compliance}</p>${warningMarkup}</div><div class="product-feature__visual angular-card"><img src="${feature.imageSrc}" alt="${feature.imageAlt}" ${adminFieldAttrs([feature.id === "home" ? "touchFreeFeature" : feature.id === "profile" ? "refillFeature" : feature.id === "messages" ? "soapFeature" : feature.id === "settings" ? "sprayBottleFeature" : "reelClipFeature", "imageSrc"], "image")}></div></div></article>`;
 }
 
 function renderSocialFeed(socialFeeds) {
     const facebookPluginUrl = `https://www.facebook.com/plugins/page.php?href=${encodeURIComponent(socialFeeds.facebookUrl)}&tabs=timeline&width=500&height=640&small_header=false&adapt_container_width=true&hide_cover=false&show_facepile=true`;
     const linkedinNotes = socialFeeds.linkedinNotes.map((note) => `<li>${note}</li>`).join("");
-    return `<section class="section section--tight"><div class="container"><div class="section-heading"><div><span class="eyebrow">Social Feed</span><h2>Latest from Facebook and LinkedIn</h2></div><p>Facebook timeline posts are embedded directly. LinkedIn keeps stricter access controls, so use the direct company link for the newest updates.</p></div><div class="social-feed-grid"><article class="social-feed-card angular-card"><header><h3>Facebook</h3><a href="${socialFeeds.facebookUrl}" target="_blank" rel="noopener noreferrer">Open Facebook page</a></header><iframe title="Sani-Hands Facebook timeline" src="${facebookPluginUrl}" width="500" height="640" style="border:none;overflow:hidden" scrolling="no" frameborder="0" allowfullscreen="true" allow="autoplay; clipboard-write; encrypted-media; picture-in-picture; web-share"></iframe></article><article class="social-feed-card social-feed-card--linkedin angular-card"><header><h3>LinkedIn</h3><a href="${socialFeeds.linkedinUrl}" target="_blank" rel="noopener noreferrer">Open LinkedIn page</a></header><ul>${linkedinNotes}</ul><div class="social-feed-actions"><a class="button button--secondary angular-card" href="${socialFeeds.linkedinUrl}" target="_blank" rel="noopener noreferrer">View Recent LinkedIn Posts</a></div></article></div></div></section>`;
+    return `<section class="section section--tight"><div class="container"><div class="section-heading"><div><span class="eyebrow" ${adminFieldAttrs(["socialFeeds", "facebookUrl"])}>Social Feed</span><h2 ${adminFieldAttrs(["socialFeeds", "facebookUrl"])}>Latest from Facebook and LinkedIn</h2></div><p ${adminFieldAttrs(["socialFeeds", "linkedinNotes", 0])}>Facebook timeline posts are embedded directly. LinkedIn keeps stricter access controls, so use the direct company link for the newest updates.</p></div><div class="social-feed-grid"><article class="social-feed-card angular-card"><header><h3 ${adminFieldAttrs(["socialFeeds", "facebookUrl"])}>Facebook</h3><a href="${socialFeeds.facebookUrl}" target="_blank" rel="noopener noreferrer" ${adminFieldAttrs(["socialFeeds", "facebookUrl"])}>Open Facebook page</a></header><iframe title="Sani-Hands Facebook timeline" src="${facebookPluginUrl}" width="500" height="640" style="border:none;overflow:hidden" scrolling="no" frameborder="0" allowfullscreen="true" allow="autoplay; clipboard-write; encrypted-media; picture-in-picture; web-share"></iframe></article><article class="social-feed-card social-feed-card--linkedin angular-card"><header><h3 ${adminFieldAttrs(["socialFeeds", "linkedinUrl"])}>LinkedIn</h3><a href="${socialFeeds.linkedinUrl}" target="_blank" rel="noopener noreferrer" ${adminFieldAttrs(["socialFeeds", "linkedinUrl"])}>Open LinkedIn page</a></header><ul>${socialFeeds.linkedinNotes.map((note, index) => `<li ${adminFieldAttrs(["socialFeeds", "linkedinNotes", index])}>${note}</li>`).join("")}</ul><div class="social-feed-actions"><a class="button button--secondary angular-card" href="${socialFeeds.linkedinUrl}" target="_blank" rel="noopener noreferrer" ${adminFieldAttrs(["socialFeeds", "linkedinUrl"])}>View Recent LinkedIn Posts</a></div></article></div></div></section>`;
 }
 
 function renderFaq(faqs) {
-    const faqItems = faqs.map((item) => `<article class="faq-item angular-card"><h3 class="faq-question">${item.question}</h3><p class="faq-answer">${item.answer}</p></article>`).join("");
+    const faqItems = faqs.map((item, index) => `<article class="faq-item angular-card"><h3 class="faq-question" ${adminFieldAttrs(["faqs", index, "question"])}>${item.question}</h3><p class="faq-answer" ${adminFieldAttrs(["faqs", index, "answer"])}>${item.answer}</p></article>`).join("");
     return `<section class="section"><div class="container"><div class="faq-list">${faqItems}</div></div></section>`;
 }
 
 function renderNews(newsItems) {
-    const cards = newsItems.map((item) => `<article class="news-card angular-card"><div class="news-card__body"><span class="news-card__date">${item.date}</span><h3>${item.title}</h3><p>${item.summary}</p></div></article>`).join("");
+    const cards = newsItems.map((item, index) => `<article class="news-card angular-card"><div class="news-card__body"><span class="news-card__date" ${adminFieldAttrs(["news", index, "date"])}>${item.date}</span><h3 ${adminFieldAttrs(["news", index, "title"])}>${item.title}</h3><p ${adminFieldAttrs(["news", index, "summary"])}>${item.summary}</p></div></article>`).join("");
     return `<section class="section"><div class="container"><div class="news-grid">${cards}</div></div></section>`;
 }
 
 function renderInquiry(inquiry) {
-    const contacts = inquiry.contacts.map((item) => `<li>${item}</li>`).join("");
-    return `<section class="section inquiry"><div class="container inquiry__layout"><div class="inquiry__copy angular-card"><span class="eyebrow">Procurement</span><h2>${inquiry.title}</h2><p>${inquiry.copy}</p><ul class="contact-list">${contacts}</ul></div><form class="inquiry__form angular-card"><div class="form-grid"><label><span>Name or Facility</span><input type="text" name="facility" placeholder="Hospital, clinic, or team name"></label><label><span>Email Address</span><input type="email" name="email" placeholder="procurement@example.org"></label><label><span>Inquiry Message</span><textarea name="message" placeholder="Tell PN Medical what products, quantities, or delivery details you need."></textarea></label><button class="button button--primary angular-card" type="submit">Send Inquiry Securely</button></div></form></div></section>`;
+    const contacts = inquiry.contacts.map((item, index) => `<li ${adminFieldAttrs(["inquiry", "contacts", index])}>${item}</li>`).join("");
+    return `<section class="section inquiry"><div class="container inquiry__layout"><div class="inquiry__copy angular-card"><span class="eyebrow" ${adminFieldAttrs(["inquiry", "title"])}>Procurement</span><h2 ${adminFieldAttrs(["inquiry", "title"])}>${inquiry.title}</h2><p ${adminFieldAttrs(["inquiry", "copy"])}>${inquiry.copy}</p><ul class="contact-list">${contacts}</ul></div><form class="inquiry__form angular-card"><div class="form-grid"><label><span>Name or Facility</span><input type="text" name="facility" placeholder="Hospital, clinic, or team name"></label><label><span>Email Address</span><input type="email" name="email" placeholder="procurement@example.org"></label><label><span>Inquiry Message</span><textarea name="message" placeholder="Tell PN Medical what products, quantities, or delivery details you need."></textarea></label><button class="button button--primary angular-card" type="submit">Send Inquiry Securely</button></div></form></div></section>`;
 }
 
 function renderFooter(navigation) {
-    return `<footer class="site-footer"><div class="container site-footer__inner"><p>PN Medical product and information site.</p><nav class="site-footer__nav" aria-label="Footer navigation">${navigation.map((item) => `<a href="${item.href}">${item.label}</a>`).join("")}<a href="admin.html">Admin Login</a></nav></div></footer>`;
+    const productTiles = siteDataset.products.slice(0, 6).map((product) => `<a class="site-footer__product" href="products.html"><img src="${product.imageSrc}" alt="${product.name}"><span>${product.name}</span></a>`).join("");
+    const footerLinks = navigation.map((item) => `<a href="${item.href}">${item.label}</a>`).join("");
+
+    return `
+        <footer class="site-footer">
+            <div class="container site-footer__grid">
+                <section class="site-footer__panel site-footer__panel--intro">
+                    <span class="eyebrow">No More Germs</span>
+                    <h2>Protect patients and staff with always-available hand hygiene.</h2>
+                    <p>Research has shown that 80% of all infectious diseases are spread by hand contact. Keep Sani-Hands Touch Free Dispensers and Handy 50ml Spray Bottles within reach so protection stays practical throughout the day.</p>
+                    <div class="site-footer__cta-row">
+                        <a class="button button--primary angular-card" href="products.html">View Products</a>
+                        <a class="button button--secondary angular-card" href="contact.html">Request a Quote</a>
+                    </div>
+                </section>
+
+                <section class="site-footer__panel">
+                    <h3>Widely Used</h3>
+                    <ul class="site-footer__checklist">
+                        <li>Medical strength</li>
+                        <li>Kills 99.9% of all germs</li>
+                        <li>No water required</li>
+                        <li>Sani-Hands is non-allergenic</li>
+                    </ul>
+                </section>
+
+                <section class="site-footer__panel">
+                    <h3>Our Products</h3>
+                    <div class="site-footer__products">${productTiles}</div>
+                </section>
+
+                <section class="site-footer__panel">
+                    <h3>Reference Details</h3>
+                    <ul class="site-footer__contact-list">
+                        <li><strong>Physical:</strong> 3 Commercial Road, Malmesbury Industria, Malmesbury, 7300</li>
+                        <li><strong>Postal:</strong> PO Box 63, Century City, 7446</li>
+                        <li><strong>Phone:</strong> <a href="${siteDataset.topBar.phoneHref}">${siteDataset.topBar.phoneDisplay}</a></li>
+                        <li><strong>Email:</strong> <a href="mailto:${siteDataset.topBar.email}">${siteDataset.topBar.email}</a></li>
+                        <li><strong>Fax:</strong> 086 599 5269</li>
+                    </ul>
+                    <nav class="site-footer__nav" aria-label="Footer navigation">${footerLinks}<a href="admin.html">Admin Login</a></nav>
+                </section>
+            </div>
+
+            <div class="site-footer__bottom">
+                <div class="container site-footer__bottom-inner">
+                    <p>© Copyright PN Medical (Reg# 2007/031947/07). Designed by Linchpin-PM.</p>
+                    <a href="https://www.facebook.com/sanihandssa/" target="_blank" rel="noopener noreferrer" aria-label="PN Medical Facebook">f</a>
+                </div>
+            </div>
+        </footer>`;
 }
 
 function renderProductIllustration(product) {

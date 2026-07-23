@@ -13,10 +13,13 @@
 </head>
 <body class="admin-page">
     <main class="admin-shell">
-        <section id="admin-login" class="admin-auth angular-card">
-            <h1>Admin Login</h1>
-            <p>Sign in to update website text and image assets by page and element.</p>
-            <form id="admin-login-form" class="admin-form">
+        <section id="admin-login" class="admin-login angular-card">
+            <div class="admin-login__copy">
+                <span class="eyebrow">Admin Portal</span>
+                <h1>PN Medical content manager</h1>
+                <p>A page-and-section editor for text, images, and media with live preview.</p>
+            </div>
+            <form id="admin-login-form" class="admin-login__form">
                 <label>
                     <span>Username</span>
                     <input type="text" name="username" autocomplete="username" required>
@@ -27,26 +30,129 @@
                 </label>
                 <button class="button button--primary angular-card" type="submit">Login</button>
             </form>
-            <p id="admin-login-error" class="admin-error" role="alert" aria-live="polite"></p>
+            <p id="admin-login-error" class="admin-status admin-status--error" role="alert" aria-live="polite"></p>
         </section>
 
-        <section id="admin-editor" class="admin-editor" hidden>
-            <header class="admin-editor__header angular-card">
-                <div>
-                    <span class="eyebrow">Content Control</span>
-                    <h1>PN Medical Admin Panel</h1>
-                    <p>Each section is grouped by page and element. Update text, image paths, and media sources, then save.</p>
+        <section id="admin-editor" class="admin-portal" hidden>
+            <header class="admin-toolbar angular-card">
+                <div class="admin-toolbar__title">
+                    <span class="eyebrow">CMS Workspace</span>
+                    <h1>Page-based editor with live preview</h1>
+                    <p>Pick a page on the left, choose a section, then edit only the content for that block.</p>
                 </div>
-                <div class="admin-editor__actions">
-                    <button id="admin-save" class="button button--primary angular-card" type="button">Save Changes</button>
-                    <button id="admin-reset" class="button button--secondary angular-card" type="button">Reset All</button>
+                <div class="admin-toolbar__actions">
+                    <label class="admin-search">
+                        <span>Search sections</span>
+                        <input id="admin-search" type="search" placeholder="Search page sections or field names">
+                    </label>
+                    <button id="admin-save" class="button button--primary angular-card" type="button">Save</button>
+                    <button id="admin-reset" class="button button--secondary angular-card" type="button">Reset</button>
                     <button id="admin-logout" class="button button--secondary angular-card" type="button">Logout</button>
                 </div>
             </header>
+
             <p id="admin-status" class="admin-status" aria-live="polite"></p>
-            <div id="admin-groups" class="admin-groups"></div>
+
+            <div class="admin-layout">
+                <aside class="admin-sidebar">
+                    <section class="admin-panel angular-card">
+                        <div class="admin-panel__header">
+                            <div>
+                                <h2>Pages</h2>
+                                <p>Choose a page to edit its grouped sections.</p>
+                            </div>
+                            <span id="admin-page-count" class="admin-pill"></span>
+                        </div>
+                        <div id="admin-page-list" class="admin-page-list"></div>
+                    </section>
+
+                    <section class="admin-panel angular-card">
+                        <div class="admin-panel__header">
+                            <div>
+                                <h2>Sections</h2>
+                                <p>Pick the section you want to edit.</p>
+                            </div>
+                            <span id="admin-section-count" class="admin-pill"></span>
+                        </div>
+                        <div id="admin-section-list" class="admin-section-list"></div>
+                    </section>
+                </aside>
+
+                <section class="admin-workbench">
+                    <header class="admin-selection angular-card">
+                        <div>
+                            <span id="admin-page-badge" class="eyebrow"></span>
+                            <h2 id="admin-section-title"></h2>
+                            <p id="admin-section-summary"></p>
+                        </div>
+                        <div class="admin-selection__meta">
+                            <span id="admin-section-field-count" class="admin-pill"></span>
+                            <span id="admin-section-preview-label" class="admin-pill admin-pill--muted"></span>
+                            <div class="admin-selection__actions">
+                                <button id="admin-save-section" class="button button--primary angular-card" type="button">Save section</button>
+                                <button id="admin-revert-section" class="button button--secondary angular-card" type="button">Revert section</button>
+                            </div>
+                        </div>
+                    </header>
+
+                    <section class="admin-selected-field angular-card">
+                        <div class="admin-panel__header">
+                            <div>
+                                <h2>Selected element</h2>
+                                <p>Click an element in the live preview to edit that exact content here.</p>
+                            </div>
+                            <span id="admin-selected-field-kind" class="admin-pill"></span>
+                        </div>
+                        <div id="admin-selected-field-editor" class="admin-selected-field__editor"></div>
+                    </section>
+
+                    <section class="admin-thumbs angular-card">
+                        <div class="admin-panel__header">
+                            <div>
+                                <h2>Asset library</h2>
+                                <p>Click an asset to replace the selected image or video field.</p>
+                            </div>
+                        </div>
+                        <div id="admin-section-thumbs" class="admin-asset-library"></div>
+                    </section>
+
+                    <section class="admin-fields angular-card">
+                        <div class="admin-panel__header">
+                            <div>
+                                <h2>Editable fields</h2>
+                                <p>Edit the text, image paths, and media sources for the selected section.</p>
+                            </div>
+                        </div>
+                        <div id="admin-field-list" class="admin-field-list"></div>
+                    </section>
+                </section>
+
+                <aside class="admin-preview-panel angular-card">
+                    <div class="admin-panel__header">
+                        <div>
+                            <h2>Live preview</h2>
+                            <p id="admin-preview-caption">Current page view for the selected section.</p>
+                        </div>
+                    </div>
+                    <div class="admin-preview-toolbar" role="toolbar" aria-label="Preview viewport selector">
+                        <button type="button" class="admin-preview-toolbar__button is-active" data-viewport="mobile" aria-label="Mobile 375 by 667">📱 Mobile</button>
+                        <button type="button" class="admin-preview-toolbar__button" data-viewport="tablet" aria-label="Tablet 768 by 1024">📱 Tablet</button>
+                        <button type="button" class="admin-preview-toolbar__button" data-viewport="laptop" aria-label="Laptop 1024 by 768">💻 Laptop</button>
+                        <button type="button" class="admin-preview-toolbar__button" data-viewport="wide" aria-label="Wide screen 1440 pixels">📺 Wide</button>
+                    </div>
+                    <div class="admin-preview-frame__shell">
+                        <div class="admin-preview-frame__viewport" id="admin-preview-viewport" data-viewport="mobile">
+                            <iframe id="admin-preview-frame" title="PN Medical live preview"></iframe>
+                        </div>
+                    </div>
+                    <div id="admin-preview-links" class="admin-preview-links"></div>
+                </aside>
+            </div>
         </section>
     </main>
+
+    <datalist id="admin-image-assets"></datalist>
+    <datalist id="admin-media-assets"></datalist>
 
     <script src="site.js"></script>
     <script src="admin.js"></script>
