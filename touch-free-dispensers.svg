@@ -1,0 +1,46 @@
+<svg width="1200" height="820" viewBox="0 0 1200 820" fill="none" xmlns="http://www.w3.org/2000/svg">
+  <rect width="1200" height="820" fill="#F8FAFC"/>
+  <rect x="36" y="36" width="1128" height="748" rx="28" fill="#FFFFFF"/>
+  <rect x="72" y="72" width="500" height="676" rx="20" fill="#F8FAFC"/>
+  <rect x="628" y="72" width="500" height="676" rx="20" fill="#F1F5F9"/>
+  <rect x="212" y="102" width="220" height="548" rx="34" fill="url(#plasticBody)" stroke="#CBD5E1" stroke-width="4"/>
+  <rect x="236" y="138" width="172" height="88" rx="16" fill="#FFFFFF"/>
+  <text x="322" y="168" text-anchor="middle" fill="#991B1B" font-family="Georgia, serif" font-size="31">SANI-HANDS</text>
+  <text x="322" y="194" text-anchor="middle" fill="#0F172A" font-family="Arial, sans-serif" font-size="14">INSTANT HAND SANITISER</text>
+  <rect x="248" y="272" width="148" height="108" rx="14" fill="#FFFFFF" stroke="#E2E8F0" stroke-width="2"/>
+  <path d="M282 366C282 328 313 296 352 296C390 296 422 328 422 366V374H282V366Z" fill="#111827"/>
+  <path d="M302 334C314 319 331 312 352 312C372 312 389 319 402 334" stroke="#9CA3AF" stroke-width="5" stroke-linecap="round"/>
+  <rect x="240" y="420" width="164" height="134" rx="10" fill="#FFFFFF" stroke="#CBD5E1" stroke-width="2"/>
+  <rect x="256" y="438" width="38" height="34" rx="8" fill="#F8FAFC" stroke="#94A3B8"/>
+  <rect x="304" y="438" width="38" height="34" rx="8" fill="#F8FAFC" stroke="#94A3B8"/>
+  <rect x="352" y="438" width="38" height="34" rx="8" fill="#F8FAFC" stroke="#94A3B8"/>
+  <path d="M270 456H280" stroke="#B91C1C" stroke-width="3" stroke-linecap="round"/>
+  <path d="M318 456H328" stroke="#0F766E" stroke-width="3" stroke-linecap="round"/>
+  <path d="M366 456H376" stroke="#0284C7" stroke-width="3" stroke-linecap="round"/>
+  <path d="M289 504C304 488 320 482 338 482C356 482 372 488 387 504" stroke="#64748B" stroke-width="6" stroke-linecap="round"/>
+  <circle cx="228" cy="614" r="8" fill="#0F172A"/>
+  <text x="322" y="650" text-anchor="middle" fill="#991B1B" font-family="Arial, sans-serif" font-size="14">RED LIGHT = LOW BATTERY</text>
+  <rect x="770" y="104" width="216" height="536" rx="8" fill="url(#steelBody)" stroke="#94A3B8" stroke-width="3"/>
+  <text x="878" y="164" text-anchor="middle" fill="#78716C" font-family="Georgia, serif" font-size="28">SANI-HANDS</text>
+  <text x="878" y="188" text-anchor="middle" fill="#78716C" font-family="Arial, sans-serif" font-size="13">Hand Sanitiser Dispenser System</text>
+  <rect x="868" y="258" width="20" height="130" rx="10" fill="#E2E8F0" stroke="#475569"/>
+  <rect x="874" y="282" width="8" height="82" rx="4" fill="#0F172A"/>
+  <text x="878" y="526" text-anchor="middle" fill="#A8A29E" font-family="Georgia, serif" font-size="36">touchless</text>
+  <text x="878" y="556" text-anchor="middle" fill="#D6D3D1" font-family="Arial, sans-serif" font-size="22">PLACE HANDS</text>
+  <text x="878" y="582" text-anchor="middle" fill="#D6D3D1" font-family="Arial, sans-serif" font-size="22">BELOW</text>
+  <path d="M848 666C856 652 874 644 878 626C882 644 900 652 908 666" stroke="#0F172A" stroke-width="7" stroke-linecap="round"/>
+  <text x="322" y="726" text-anchor="middle" fill="#475569" font-family="Arial, sans-serif" font-size="24">Plastic touch-free unit</text>
+  <text x="878" y="726" text-anchor="middle" fill="#475569" font-family="Arial, sans-serif" font-size="24">Stainless steel touch-free unit</text>
+  <defs>
+    <linearGradient id="plasticBody" x1="212" y1="102" x2="432" y2="650" gradientUnits="userSpaceOnUse">
+      <stop stop-color="#FFFFFF"/>
+      <stop offset="1" stop-color="#E5E7EB"/>
+    </linearGradient>
+    <linearGradient id="steelBody" x1="770" y1="104" x2="986" y2="640" gradientUnits="userSpaceOnUse">
+      <stop stop-color="#E7E5E4"/>
+      <stop offset="0.38" stop-color="#A8A29E"/>
+      <stop offset="0.7" stop-color="#D6D3D1"/>
+      <stop offset="1" stop-color="#78716C"/>
+    </linearGradient>
+  </defs>
+</svg>

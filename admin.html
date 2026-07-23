@@ -1,0 +1,54 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>PN Medical | Admin</title>
+    <meta name="description" content="PN Medical content administration panel.">
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Barlow:wght@400;500;600;700;800&family=Space+Grotesk:wght@500;700&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="styles.css">
+    <link rel="stylesheet" href="admin.css">
+</head>
+<body class="admin-page">
+    <main class="admin-shell">
+        <section id="admin-login" class="admin-auth angular-card">
+            <h1>Admin Login</h1>
+            <p>Sign in to update website text and image assets by page and element.</p>
+            <form id="admin-login-form" class="admin-form">
+                <label>
+                    <span>Username</span>
+                    <input type="text" name="username" autocomplete="username" required>
+                </label>
+                <label>
+                    <span>Password</span>
+                    <input type="password" name="password" autocomplete="current-password" required>
+                </label>
+                <button class="button button--primary angular-card" type="submit">Login</button>
+            </form>
+            <p id="admin-login-error" class="admin-error" role="alert" aria-live="polite"></p>
+        </section>
+
+        <section id="admin-editor" class="admin-editor" hidden>
+            <header class="admin-editor__header angular-card">
+                <div>
+                    <span class="eyebrow">Content Control</span>
+                    <h1>PN Medical Admin Panel</h1>
+                    <p>Each section is grouped by page and element. Update text, image paths, and media sources, then save.</p>
+                </div>
+                <div class="admin-editor__actions">
+                    <button id="admin-save" class="button button--primary angular-card" type="button">Save Changes</button>
+                    <button id="admin-reset" class="button button--secondary angular-card" type="button">Reset All</button>
+                    <button id="admin-logout" class="button button--secondary angular-card" type="button">Logout</button>
+                </div>
+            </header>
+            <p id="admin-status" class="admin-status" aria-live="polite"></p>
+            <div id="admin-groups" class="admin-groups"></div>
+        </section>
+    </main>
+
+    <script src="site.js"></script>
+    <script src="admin.js"></script>
+</body>
+</html>

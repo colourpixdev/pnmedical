@@ -1,0 +1,72 @@
+<svg viewBox="0 0 1000 620" xmlns="http://www.w3.org/2000/svg" role="img" aria-labelledby="title desc">
+  <title id="title">Sani-Hands Isopropanol Spray Bottle 50ml</title>
+  <desc id="desc">Illustration of grouped 50ml Sani-Hands spray bottles in white with red label accents.</desc>
+  <defs>
+    <linearGradient id="bg" x1="0" y1="0" x2="1" y2="1">
+      <stop offset="0%" stop-color="#f8fafc"/>
+      <stop offset="100%" stop-color="#e2e8f0"/>
+    </linearGradient>
+    <linearGradient id="bottle" x1="0" y1="0" x2="0" y2="1">
+      <stop offset="0%" stop-color="#ffffff"/>
+      <stop offset="100%" stop-color="#eef2f7"/>
+    </linearGradient>
+    <linearGradient id="cap" x1="0" y1="0" x2="0" y2="1">
+      <stop offset="0%" stop-color="#f8fafc"/>
+      <stop offset="100%" stop-color="#d4dbe5"/>
+    </linearGradient>
+  </defs>
+
+  <rect x="0" y="0" width="1000" height="620" fill="url(#bg)"/>
+  <rect x="0" y="510" width="1000" height="110" fill="#dbe3ee" opacity="0.55"/>
+
+  <g opacity="0.35">
+    <ellipse cx="230" cy="535" rx="100" ry="20" fill="#94a3b8"/>
+    <ellipse cx="400" cy="545" rx="130" ry="22" fill="#94a3b8"/>
+    <ellipse cx="600" cy="548" rx="145" ry="24" fill="#94a3b8"/>
+    <ellipse cx="780" cy="540" rx="120" ry="22" fill="#94a3b8"/>
+  </g>
+
+  <g transform="translate(120,70)">
+    <g transform="translate(0,40) scale(0.92)">
+      <rect x="0" y="0" width="95" height="98" rx="18" fill="url(#cap)" stroke="#cbd5e1"/>
+      <rect x="8" y="88" width="79" height="40" rx="14" fill="url(#cap)" stroke="#cbd5e1"/>
+      <rect x="14" y="120" width="67" height="290" rx="25" fill="url(#bottle)" stroke="#dbe3ee" stroke-width="2"/>
+      <rect x="22" y="200" width="51" height="140" rx="12" fill="#fff" stroke="#f1f5f9"/>
+      <text x="48" y="250" text-anchor="middle" font-size="20" font-family="Barlow, Arial, sans-serif" font-weight="700" fill="#cf271f">SANI</text>
+      <text x="48" y="273" text-anchor="middle" font-size="20" font-family="Barlow, Arial, sans-serif" font-weight="700" fill="#cf271f">HANDS</text>
+      <rect x="28" y="292" width="39" height="2" fill="#cf271f" opacity="0.5"/>
+      <text x="48" y="375" text-anchor="middle" font-size="14" font-family="Barlow, Arial, sans-serif" font-weight="600" fill="#475569">50ml</text>
+    </g>
+
+    <g transform="translate(150,0)">
+      <rect x="0" y="0" width="105" height="108" rx="18" fill="url(#cap)" stroke="#cbd5e1"/>
+      <rect x="10" y="96" width="85" height="44" rx="14" fill="url(#cap)" stroke="#cbd5e1"/>
+      <rect x="18" y="132" width="70" height="332" rx="28" fill="url(#bottle)" stroke="#dbe3ee" stroke-width="2"/>
+      <rect x="26" y="220" width="54" height="160" rx="12" fill="#fff" stroke="#f1f5f9"/>
+      <text x="53" y="274" text-anchor="middle" font-size="21" font-family="Barlow, Arial, sans-serif" font-weight="700" fill="#cf271f">SANI</text>
+      <text x="53" y="298" text-anchor="middle" font-size="21" font-family="Barlow, Arial, sans-serif" font-weight="700" fill="#cf271f">HANDS</text>
+      <rect x="31" y="319" width="44" height="2" fill="#cf271f" opacity="0.55"/>
+      <text x="53" y="420" text-anchor="middle" font-size="15" font-family="Barlow, Arial, sans-serif" font-weight="600" fill="#475569">50ml</text>
+    </g>
+
+    <g transform="translate(320,28) scale(0.98)">
+      <rect x="0" y="0" width="98" height="102" rx="18" fill="url(#cap)" stroke="#cbd5e1"/>
+      <rect x="9" y="92" width="80" height="40" rx="14" fill="url(#cap)" stroke="#cbd5e1"/>
+      <rect x="16" y="124" width="66" height="308" rx="26" fill="url(#bottle)" stroke="#dbe3ee" stroke-width="2"/>
+      <rect x="23" y="206" width="52" height="148" rx="12" fill="#fff" stroke="#f1f5f9"/>
+      <text x="49" y="262" text-anchor="middle" font-size="20" font-family="Barlow, Arial, sans-serif" font-weight="700" fill="#cf271f">SANI</text>
+      <text x="49" y="286" text-anchor="middle" font-size="20" font-family="Barlow, Arial, sans-serif" font-weight="700" fill="#cf271f">HANDS</text>
+      <text x="49" y="398" text-anchor="middle" font-size="14" font-family="Barlow, Arial, sans-serif" font-weight="600" fill="#475569">50ml</text>
+    </g>
+
+    <g transform="translate(470,50) scale(0.9)">
+      <rect x="0" y="0" width="95" height="98" rx="18" fill="url(#cap)" stroke="#cbd5e1"/>
+      <rect x="8" y="88" width="79" height="40" rx="14" fill="url(#cap)" stroke="#cbd5e1"/>
+      <rect x="14" y="120" width="67" height="286" rx="25" fill="url(#bottle)" stroke="#dbe3ee" stroke-width="2"/>
+      <rect x="22" y="196" width="51" height="140" rx="12" fill="#fff" stroke="#f1f5f9"/>
+      <text x="48" y="246" text-anchor="middle" font-size="20" font-family="Barlow, Arial, sans-serif" font-weight="700" fill="#cf271f">SANI</text>
+      <text x="48" y="270" text-anchor="middle" font-size="20" font-family="Barlow, Arial, sans-serif" font-weight="700" fill="#cf271f">HANDS</text>
+      <text x="48" y="372" text-anchor="middle" font-size="14" font-family="Barlow, Arial, sans-serif" font-weight="600" fill="#475569">50ml</text>
+    </g>
+  </g>
+</svg>

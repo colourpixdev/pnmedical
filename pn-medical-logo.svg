@@ -1,0 +1,14 @@
+<svg width="365" height="91" viewBox="0 0 365 91" fill="none" xmlns="http://www.w3.org/2000/svg">
+  <rect width="365" height="91" fill="white"/>
+  <circle cx="45" cy="45.5" r="43" fill="#E5F6EF" stroke="#A3A3A3" stroke-width="4"/>
+  <circle cx="45" cy="45.5" r="33" fill="#DFFBF1"/>
+  <rect x="29" y="21" width="32" height="49" fill="#E3342A"/>
+  <rect x="18" y="31" width="54" height="29" fill="#E3342A"/>
+  <path d="M18 46H27L30 42L34 54L39 35L44 46L49 42L53 46H72" stroke="white" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round"/>
+  <rect x="190" y="22" width="174" height="9" fill="#E3342A"/>
+  <rect x="144" y="62" width="220" height="9" fill="#E3342A"/>
+  <text x="96" y="39" fill="#1F1B20" font-family="Arial, Helvetica, sans-serif" font-size="33" font-style="italic" font-weight="700">pn</text>
+  <text x="96" y="71" fill="#1F1B20" font-family="Arial, Helvetica, sans-serif" font-size="33" font-style="italic" font-weight="700">medical</text>
+  <rect x="165" y="50" width="8" height="8" fill="#E3342A"/>
+  <text x="345" y="82" text-anchor="end" fill="white" font-family="Arial, Helvetica, sans-serif" font-size="13" font-style="italic" font-weight="700">(Pty) Ltd</text>
+</svg>

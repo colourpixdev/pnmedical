@@ -1,0 +1,35 @@
+<svg width="1200" height="820" viewBox="0 0 1200 820" fill="none" xmlns="http://www.w3.org/2000/svg">
+  <rect width="1200" height="820" fill="#F8FAFC"/>
+  <rect x="36" y="36" width="1128" height="748" rx="28" fill="#FFFFFF"/>
+  <rect x="70" y="78" width="500" height="664" rx="22" fill="#F8FAFC"/>
+  <rect x="630" y="78" width="500" height="664" rx="22" fill="#F8FAFC"/>
+  <rect x="142" y="118" width="354" height="564" rx="22" fill="#202736"/>
+  <path d="M190 148H448L434 618H204L190 148Z" fill="url(#bagBody)"/>
+  <rect x="214" y="238" width="252" height="168" rx="14" fill="#FFFFFF"/>
+  <text x="226" y="272" fill="#1F2937" font-family="Arial, sans-serif" font-size="28" font-weight="700">1 Litre Sani-Hands 70% Isopropanol Refill Bag</text>
+  <text x="226" y="308" fill="#334155" font-family="Arial, sans-serif" font-size="18">COUNTRY OF ORIGIN: South Africa</text>
+  <text x="226" y="334" fill="#334155" font-family="Arial, sans-serif" font-size="18">Manufactured by: PN Medical (Pty) Ltd</text>
+  <text x="226" y="360" fill="#334155" font-family="Arial, sans-serif" font-size="18">Waterless alcohol-based hand sanitiser</text>
+  <text x="226" y="394" fill="#CF271F" font-family="Arial, sans-serif" font-size="18" font-weight="700">WARNING</text>
+  <text x="226" y="420" fill="#475569" font-family="Arial, sans-serif" font-size="16">For external use only. Keep away from heat and flames.</text>
+  <text x="226" y="570" fill="#1F2937" font-family="Arial, sans-serif" font-size="26" font-weight="700">Expiry date: June 2019</text>
+  <rect x="742" y="132" width="274" height="268" rx="18" fill="#1F2430"/>
+  <path d="M784 152H974L962 360H796L784 152Z" fill="url(#bagBody)"/>
+  <rect x="812" y="196" width="164" height="74" rx="10" fill="#FFFFFF"/>
+  <text x="824" y="224" fill="#334155" font-family="Arial, sans-serif" font-size="16" font-weight="700">1 Litre refill bag</text>
+  <text x="824" y="248" fill="#475569" font-family="Arial, sans-serif" font-size="13">Fits the Sani-Hands</text>
+  <text x="824" y="266" fill="#475569" font-family="Arial, sans-serif" font-size="13">touch-free dispenser system</text>
+  <rect x="754" y="400" width="248" height="244" rx="16" fill="#E5E7EB" stroke="#94A3B8" stroke-width="3"/>
+  <rect x="792" y="466" width="172" height="138" rx="10" fill="#F8FAFC"/>
+  <rect x="872" y="404" width="12" height="92" rx="6" fill="#CF271F"/>
+  <text x="878" y="566" text-anchor="middle" fill="#991B1B" font-family="Georgia, serif" font-size="30">SANI-HANDS</text>
+  <text x="878" y="592" text-anchor="middle" fill="#334155" font-family="Arial, sans-serif" font-size="15">INSTANT HAND SANITISER</text>
+  <text x="320" y="724" text-anchor="middle" fill="#475569" font-family="Arial, sans-serif" font-size="24">1 litre refill bag label detail</text>
+  <text x="878" y="724" text-anchor="middle" fill="#475569" font-family="Arial, sans-serif" font-size="24">Mounted refill system view</text>
+  <defs>
+    <linearGradient id="bagBody" x1="319" y1="148" x2="319" y2="618" gradientUnits="userSpaceOnUse">
+      <stop stop-color="#4B5563"/>
+      <stop offset="1" stop-color="#1F2937"/>
+    </linearGradient>
+  </defs>
+</svg>

@@ -1,0 +1,125 @@
+{
+  "project": "PN Medical Frontend Mockup and Wireframe Dataset",
+  "generatedOn": "2026-07-23",
+  "components": [
+    {
+      "componentId": "COMP-001",
+      "componentName": "Top Admin Information Bar",
+      "visualDescription": "High-contrast Charcoal Slate thin row spanning full width with white text and Sky Blue links.",
+      "contentItems": [
+        "3 Commercial Road, Malmesbury Industria",
+        "+27 21 552 9799",
+        "info@pnmedical.co.za"
+      ],
+      "designThemeRules": [
+        "background: #1E293B",
+        "color: #FFFFFF",
+        "font-size: 0.85rem",
+        "display: flex",
+        "justify-content: space-between"
+      ]
+    },
+    {
+      "componentId": "COMP-002",
+      "componentName": "Asymmetric Angular Hero Banner",
+      "visualDescription": "Bold 135-degree angular gradient shift from Charcoal Slate to Deep Teal with a slanted lower edge.",
+      "contentItems": [
+        "Kills 99.9% of Tested Germs",
+        "Advanced Infection Control Solutions",
+        "Explore Products",
+        "Request Quote"
+      ],
+      "designThemeRules": [
+        "background: linear-gradient(135deg, #1E293B 40%, #0F766E 100%)",
+        "clip-path: polygon(0 0, 100% 0, 100% 90%, 0 100%)"
+      ]
+    },
+    {
+      "componentId": "COMP-003",
+      "componentName": "Credibility and Accreditation Block",
+      "visualDescription": "Two-column grid on a light surface with a Sky Blue authority accent on the accreditation panel.",
+      "contentItems": [
+        "Established 2007",
+        "Serving hospitals, clinics, dairies, factories, and abattoirs",
+        "ISO 22716, SGS FR12/01290 and FR12/01295, ISO 9001, HACCP, WHO GMP"
+      ],
+      "designThemeRules": [
+        "grid-template-columns: 1fr 1fr",
+        "border-left: 5px solid #0284C7",
+        "box-shadow: ambient"
+      ]
+    },
+    {
+      "componentId": "COMP-004",
+      "componentName": "Three-Column Flagship Product Grid",
+      "visualDescription": "Auto-responsive card grid for dispensers and refill products.",
+      "contentItems": [
+        "Plastic Touch-Free Dispenser",
+        "Stainless Steel Dispenser",
+        "1L Isopropanol Refill Bag",
+        "50ml Spray Bottle",
+        "Retractable Reel and Clip"
+      ],
+      "designThemeRules": [
+        "grid-template-columns: repeat(auto-fit, minmax(280px, 1fr))",
+        "gap: 30px",
+        "clip-path on CTA buttons"
+      ]
+    },
+    {
+      "componentId": "COMP-005",
+      "componentName": "Interactive FAQ Accordion Module",
+      "visualDescription": "Interactive expanding rows with animated answer panels and active-state icon rotation.",
+      "contentItems": [
+        "Prices on request",
+        "Easy installation",
+        "Approximately 1000 sprays per 1L bag",
+        "99.9% protection"
+      ],
+      "designThemeRules": [
+        "transition: max-height 0.3s ease-out",
+        "overflow: hidden",
+        "active chevron rotation"
+      ]
+    },
+    {
+      "componentId": "COMP-006",
+      "componentName": "Latest Campaigns and News Stream",
+      "visualDescription": "Timeline cards with deep teal top stripe and crimson dates.",
+      "contentItems": [
+        "Western Cape Infection Prevention Day",
+        "Khayelitsha Hospital campaign",
+        "Brewelskloof demonstration"
+      ],
+      "designThemeRules": [
+        "border-top: 4px solid #0F766E",
+        "date color: #B91C1C",
+        "white cards with soft shadow"
+      ]
+    },
+    {
+      "componentId": "COMP-007",
+      "componentName": "Secure Procurement Inquiry Block",
+      "visualDescription": "Dark split-pane container with an angular translucent form block.",
+      "contentItems": [
+        "Facility details",
+        "Name, email, and message inputs",
+        "Send Inquiry Securely CTA"
+      ],
+      "designThemeRules": [
+        "background: #1E293B",
+        "form background: rgba(255,255,255,0.05)",
+        "white-outline controls"
+      ]
+    }
+  ],
+  "filters": [
+    "all",
+    "dispensers",
+    "liquid-refills"
+  ],
+  "mediaAssets": [
+    "Website.mp4",
+    "Social Media.mp4"
+  ]
+}
