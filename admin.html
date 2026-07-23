@@ -54,80 +54,7 @@
             <p id="admin-status" class="admin-status" aria-live="polite"></p>
 
             <div class="admin-layout">
-                <aside class="admin-sidebar">
-                    <section class="admin-panel angular-card">
-                        <div class="admin-panel__header">
-                            <div>
-                                <h2>Pages</h2>
-                                <p>Choose a page to edit its grouped sections.</p>
-                            </div>
-                            <span id="admin-page-count" class="admin-pill"></span>
-                        </div>
-                        <div id="admin-page-list" class="admin-page-list"></div>
-                    </section>
-
-                    <section class="admin-panel angular-card">
-                        <div class="admin-panel__header">
-                            <div>
-                                <h2>Sections</h2>
-                                <p>Pick the section you want to edit.</p>
-                            </div>
-                            <span id="admin-section-count" class="admin-pill"></span>
-                        </div>
-                        <div id="admin-section-list" class="admin-section-list"></div>
-                    </section>
-                </aside>
-
-                <section class="admin-workbench">
-                    <header class="admin-selection angular-card">
-                        <div>
-                            <span id="admin-page-badge" class="eyebrow"></span>
-                            <h2 id="admin-section-title"></h2>
-                            <p id="admin-section-summary"></p>
-                        </div>
-                        <div class="admin-selection__meta">
-                            <span id="admin-section-field-count" class="admin-pill"></span>
-                            <span id="admin-section-preview-label" class="admin-pill admin-pill--muted"></span>
-                            <div class="admin-selection__actions">
-                                <button id="admin-save-section" class="button button--primary angular-card" type="button">Save section</button>
-                                <button id="admin-revert-section" class="button button--secondary angular-card" type="button">Revert section</button>
-                            </div>
-                        </div>
-                    </header>
-
-                    <section class="admin-selected-field angular-card">
-                        <div class="admin-panel__header">
-                            <div>
-                                <h2>Selected element</h2>
-                                <p>Click an element in the live preview to edit that exact content here.</p>
-                            </div>
-                            <span id="admin-selected-field-kind" class="admin-pill"></span>
-                        </div>
-                        <div id="admin-selected-field-editor" class="admin-selected-field__editor"></div>
-                    </section>
-
-                    <section class="admin-thumbs angular-card">
-                        <div class="admin-panel__header">
-                            <div>
-                                <h2>Asset library</h2>
-                                <p>Click an asset to replace the selected image or video field.</p>
-                            </div>
-                        </div>
-                        <div id="admin-section-thumbs" class="admin-asset-library"></div>
-                    </section>
-
-                    <section class="admin-fields angular-card">
-                        <div class="admin-panel__header">
-                            <div>
-                                <h2>Editable fields</h2>
-                                <p>Edit the text, image paths, and media sources for the selected section.</p>
-                            </div>
-                        </div>
-                        <div id="admin-field-list" class="admin-field-list"></div>
-                    </section>
-                </section>
-
-                <aside class="admin-preview-panel angular-card">
+                <section class="admin-stage admin-preview-panel angular-card">
                     <div class="admin-panel__header">
                         <div>
                             <h2>Live preview</h2>
@@ -146,6 +73,54 @@
                         </div>
                     </div>
                     <div id="admin-preview-links" class="admin-preview-links"></div>
+                </section>
+
+                <aside class="admin-workbench">
+                    <header class="admin-selection angular-card">
+                        <div>
+                            <span class="eyebrow">Context</span>
+                            <h2 id="admin-section-title"></h2>
+                            <p id="admin-section-summary"></p>
+                        </div>
+                        <div class="admin-selection__meta">
+                            <span id="admin-page-badge" class="admin-pill admin-pill--muted"></span>
+                            <span id="admin-page-count" class="admin-pill admin-pill--muted"></span>
+                            <span id="admin-section-count" class="admin-pill admin-pill--muted"></span>
+                            <span id="admin-section-field-count" class="admin-pill"></span>
+                            <span id="admin-section-preview-label" class="admin-pill admin-pill--muted"></span>
+                            <div class="admin-selection__actions">
+                                <button id="admin-save-section" class="button button--primary angular-card" type="button">Save section</button>
+                                <button id="admin-revert-section" class="button button--secondary angular-card" type="button">Revert section</button>
+                            </div>
+                        </div>
+                        <div class="admin-context-controls">
+                            <label>
+                                <span>Page</span>
+                                <select id="admin-page-select" aria-label="Select page"></select>
+                            </label>
+                            <label>
+                                <span>Section</span>
+                                <select id="admin-section-select" aria-label="Select section"></select>
+                            </label>
+                        </div>
+                    </header>
+
+                    <section class="admin-selected-field angular-card">
+                        <div class="admin-panel__header">
+                            <div>
+                                <h2>Selected element</h2>
+                                <p id="admin-inspector-hint">Click an element in the live preview to open focused inspector controls.</p>
+                            </div>
+                            <span id="admin-selected-field-kind" class="admin-pill"></span>
+                        </div>
+                        <div id="admin-selected-field-editor" class="admin-selected-field__editor"></div>
+                    </section>
+                    <section class="admin-data-staging" aria-hidden="true">
+                        <div id="admin-page-list" class="admin-page-list"></div>
+                        <div id="admin-section-list" class="admin-section-list"></div>
+                        <div id="admin-section-thumbs" class="admin-asset-library"></div>
+                        <div id="admin-field-list" class="admin-field-list"></div>
+                    </section>
                 </aside>
             </div>
         </section>

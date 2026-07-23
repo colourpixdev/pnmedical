@@ -567,6 +567,9 @@ const pageCount = document.querySelector("#admin-page-count");
 const sectionCount = document.querySelector("#admin-section-count");
 const sectionFieldCount = document.querySelector("#admin-section-field-count");
 const sectionPreviewLabel = document.querySelector("#admin-section-preview-label");
+const pageSelect = document.querySelector("#admin-page-select");
+const sectionSelect = document.querySelector("#admin-section-select");
+const inspectorHint = document.querySelector("#admin-inspector-hint");
 const imageAssetList = document.querySelector("#admin-image-assets");
 const mediaAssetList = document.querySelector("#admin-media-assets");
 const selectedFieldKind = document.querySelector("#admin-selected-field-kind");
@@ -599,6 +602,7 @@ let selectedFieldPath = null;
 let selectedElement = null;
 let previewViewportMode = "mobile";
 let autosaveTimer = null;
+const previewInspectorState = new Map();
 const PREVIEW_MESSAGE_SOURCE = "pn-medical-preview";
 const EDITOR_MESSAGE_SOURCE = "pn-medical-editor";
 
@@ -612,13 +616,15 @@ if (!defaultDataset) {
 
 function initializeAdmin() {
     loginForm.addEventListener("submit", handleLogin);
-    saveButton.addEventListener("click", saveChanges);
-    resetButton.addEventListener("click", resetAllChanges);
-    logoutButton.addEventListener("click", logout);
-    saveSectionButton.addEventListener("click", saveChanges);
-    revertSectionButton.addEventListener("click", revertCurrentSection);
-    searchInput.addEventListener("input", renderPortal);
-    previewFrame.addEventListener("load", attachPreviewBridge);
+    saveButton?.addEventListener("click", saveChanges);
+    resetButton?.addEventListener("click", resetAllChanges);
+    logoutButton?.addEventListener("click", logout);
+    saveSectionButton?.addEventListener("click", saveChanges);
+    revertSectionButton?.addEventListener("click", revertCurrentSection);
+    searchInput?.addEventListener("input", renderPortal);
+    pageSelect?.addEventListener("change", handlePageSelection);
+    sectionSelect?.addEventListener("change", handleSectionSelection);
+    previewFrame?.addEventListener("load", attachPreviewBridge);
     window.addEventListener("message", handlePreviewMessage);
     document.addEventListener("pn-admin-preview-select", handlePreviewSelectionEvent);
     document.querySelectorAll("[data-viewport]").forEach((button) => {
@@ -689,6 +695,65 @@ function logout() {
     document.body.classList.remove("admin-authenticated");
     statusMessage.textContent = "Logged out.";
     showLogin();
+}
+
+function setActivePage(pageId) {
+    const targetPage = pageConfig.find((page) => page.id === pageId);
+    if (!targetPage) {
+        return;
+    }
+
+    activePageId = targetPage.id;
+    activeSectionId = targetPage.sections[0]?.id || activeSectionId;
+    selectedFieldPath = null;
+    selectedElement = null;
+    document.body.classList.remove("admin-element-focused");
+}
+
+function setActiveSection(sectionId) {
+    const targetSection = getActivePage().sections.find((section) => section.id === sectionId);
+    if (!targetSection) {
+        return;
+    }
+
+    activeSectionId = targetSection.id;
+    selectedFieldPath = null;
+    selectedElement = null;
+    document.body.classList.remove("admin-element-focused");
+}
+
+function handlePageSelection() {
+    const nextPageId = String(pageSelect?.value || "");
+    if (!nextPageId || nextPageId === activePageId) {
+        return;
+    }
+
+    persistCurrentSectionDraft({ announce: false, reRender: false, quiet: true });
+    setActivePage(nextPageId);
+    renderPortal();
+}
+
+function handleSectionSelection() {
+    const nextSectionId = String(sectionSelect?.value || "");
+    if (!nextSectionId || nextSectionId === activeSectionId) {
+        return;
+    }
+
+    persistCurrentSectionDraft({ announce: false, reRender: false, quiet: true });
+    setActiveSection(nextSectionId);
+    renderPortal();
+}
+
+function renderContextSelectors(pages, activePage) {
+    if (pageSelect) {
+        pageSelect.innerHTML = pages.map((page) => `<option value="${escapeHtml(page.id)}">${escapeHtml(page.title)}</option>`).join("");
+        pageSelect.value = activePage.id;
+    }
+
+    if (sectionSelect) {
+        sectionSelect.innerHTML = activePage.sections.map((section) => `<option value="${escapeHtml(section.id)}">${escapeHtml(section.title)}</option>`).join("");
+        sectionSelect.value = activeSectionId;
+    }
 }
 
 function readOverrides() {
@@ -935,7 +1000,7 @@ function attachPreviewBridge() {
     if (!frameDocument.getElementById("pn-admin-preview-style")) {
         const style = frameDocument.createElement("style");
         style.id = "pn-admin-preview-style";
-        style.textContent = `[data-admin-field]{cursor:pointer;} .pn-admin-selected{outline:3px solid rgba(2,132,199,.95)!important;outline-offset:2px;}`;
+        style.textContent = `[data-admin-field]{cursor:pointer;transition:outline-color 120ms ease, box-shadow 120ms ease;}[data-admin-field]:hover{outline:2px solid rgba(2,132,199,.45)!important;outline-offset:2px;}.pn-admin-selected{outline:2px solid rgba(2,132,199,.92)!important;outline-offset:2px;box-shadow:0 0 0 3px rgba(2,132,199,.15);} `;
         frameDocument.head.appendChild(style);
     }
 
@@ -972,12 +1037,19 @@ function setSelectedElement(path, options = {}) {
     selectedElement = createSelectedElement(resolvedPath, options.mergedData || getMergedDataset());
     document.body.classList.add("admin-element-focused");
 
+    const frameDocument = previewFrame?.contentDocument;
+    if (frameDocument) {
+        frameDocument.querySelectorAll(".pn-admin-selected").forEach((node) => node.classList.remove("pn-admin-selected"));
+        const selectedNode = frameDocument.querySelector(`[data-admin-field="${CSS.escape(pathToKey(resolvedPath))}"]`);
+        selectedNode?.classList.add("pn-admin-selected");
+    }
+
     const input = fieldListRoot.querySelector(`[data-path="${pathToKey(resolvedPath)}"]`);
     if (input) {
         activeFieldInput = input;
     }
 
-    renderSelectedFieldInspector(getActivePage(), section, options.mergedData || getMergedDataset(), options);
+    renderSelectedFieldInspector(getActivePage(), section, options.mergedData || getMergedDataset());
     postPreviewMessage({
         action: "highlight-element",
         element: selectedElement
@@ -987,6 +1059,8 @@ function setSelectedElement(path, options = {}) {
         input.focus({ preventScroll: true });
     }
 
+    applyInspectorPresentation(resolvedPath);
+
     highlightSelectedFieldCard();
 }
 
@@ -994,6 +1068,8 @@ function clearSelectedElement(options = {}) {
     selectedElement = null;
     selectedFieldPath = null;
     document.body.classList.remove("admin-element-focused");
+    const frameDocument = previewFrame?.contentDocument;
+    frameDocument?.querySelectorAll(".pn-admin-selected").forEach((node) => node.classList.remove("pn-admin-selected"));
     if (!options.skipRender) {
         renderPortal();
     }
@@ -1027,11 +1103,7 @@ function renderPageList(pages) {
     pageListRoot.querySelectorAll("[data-page-id]").forEach((button) => {
         button.addEventListener("click", () => {
             persistCurrentSectionDraft({ announce: false, reRender: false, quiet: true });
-            activePageId = button.getAttribute("data-page-id");
-            activeSectionId = getActivePage().sections[0].id;
-            selectedFieldPath = getActiveSection().fields[0];
-            selectedElement = null;
-            document.body.classList.remove("admin-element-focused");
+            setActivePage(String(button.getAttribute("data-page-id") || ""));
             renderPortal();
         });
     });
@@ -1047,10 +1119,7 @@ function renderSectionList(page) {
     sectionListRoot.querySelectorAll("[data-section-id]").forEach((button) => {
         button.addEventListener("click", () => {
             persistCurrentSectionDraft({ announce: false, reRender: false, quiet: true });
-            activeSectionId = button.getAttribute("data-section-id");
-            selectedFieldPath = getActiveSection().fields[0];
-            selectedElement = null;
-            document.body.classList.remove("admin-element-focused");
+            setActiveSection(String(button.getAttribute("data-section-id") || ""));
             renderPortal();
         });
     });
@@ -1106,93 +1175,294 @@ function renderFieldCard(path, value) {
     return `<article class="admin-field angular-card${isSelected ? " is-selected" : ""}" data-field-card="${escapeHtml(pathString)}"><div class="admin-field__header"><label><span data-field-kind="${escapeHtml(type)}">${label}</span>${inputMarkup}</label><p class="admin-path">${escapeHtml(pathString)}</p></div><div class="admin-placeholder"><span class="admin-placeholder__title">Preview</span>${previewMarkup}</div></article>`;
 }
 
-function renderSelectedFieldInspector(page, section, mergedData) {
-    const path = getSelectedFieldPath(section);
-    const value = String(getByPath(mergedData, path) ?? "");
-    const type = getSelectedFieldType(path, value);
-    const label = escapeHtml(fieldLabel(path));
-    const key = pathToKey(path);
-
-    if (selectedFieldKind) {
-        selectedFieldKind.textContent = type;
+function resolveSiblingFieldPath(section, path, candidates) {
+    if (!Array.isArray(path) || !path.length) {
+        return null;
     }
 
+    const prefix = path.slice(0, -1);
+    for (const candidate of candidates) {
+        const nextPath = prefix.concat(candidate);
+        const inSection = findFieldPathInSection(section, pathToKey(nextPath));
+        if (inSection) {
+            return inSection;
+        }
+    }
+
+    return null;
+}
+
+function getPreviewEditableElement(path) {
+    const frameDocument = previewFrame?.contentDocument;
+    if (!frameDocument || !Array.isArray(path)) {
+        return null;
+    }
+
+    const selector = `[data-admin-field="${CSS.escape(pathToKey(path))}"]`;
+    return frameDocument.querySelector(selector);
+}
+
+function getInspectorPresentationState(path) {
+    const key = pathToKey(path);
+    if (!previewInspectorState.has(key)) {
+        previewInspectorState.set(key, {
+            bold: false,
+            align: "inherit",
+            linkTarget: "self"
+        });
+    }
+
+    return previewInspectorState.get(key);
+}
+
+function applyInspectorPresentation(path) {
+    const element = getPreviewEditableElement(path);
+    if (!element) {
+        return;
+    }
+
+    const state = getInspectorPresentationState(path);
+    element.style.fontWeight = state.bold ? "700" : "";
+    element.style.textAlign = state.align === "inherit" ? "" : state.align;
+
+    if (element.tagName === "A") {
+        if (state.linkTarget === "blank") {
+            element.setAttribute("target", "_blank");
+            element.setAttribute("rel", "noopener noreferrer");
+        } else {
+            element.setAttribute("target", "_self");
+            element.removeAttribute("rel");
+        }
+    }
+}
+
+function toggleInspectorBold(path) {
+    const state = getInspectorPresentationState(path);
+    state.bold = !state.bold;
+    applyInspectorPresentation(path);
+}
+
+function setInspectorAlignment(path, align) {
+    const state = getInspectorPresentationState(path);
+    state.align = ["left", "center", "right", "inherit"].includes(align) ? align : "inherit";
+    applyInspectorPresentation(path);
+}
+
+function setInspectorLinkTarget(path, linkTarget) {
+    const state = getInspectorPresentationState(path);
+    state.linkTarget = linkTarget === "blank" ? "blank" : "self";
+    applyInspectorPresentation(path);
+}
+
+function renderSelectedFieldInspector(page, section, mergedData) {
     if (!selectedFieldEditor) {
         return;
     }
 
+    if (!selectedElement?.path) {
+        if (selectedFieldKind) {
+            selectedFieldKind.textContent = "waiting";
+        }
+        if (inspectorHint) {
+            inspectorHint.textContent = "Select anything with a blue hover ring in the preview to open focused controls.";
+        }
+
+        selectedFieldEditor.innerHTML = `
+            <article class="admin-inspector-empty">
+                <h3>Inspector is ready</h3>
+                <p>Use the preview to click an editable element. The inspector will switch to image or text controls for that exact element only.</p>
+                <p><strong>Current context:</strong> ${escapeHtml(page.title)} / ${escapeHtml(section.title)}</p>
+            </article>
+        `;
+        return;
+    }
+
+    const path = getSelectedFieldPath(section);
+    const key = pathToKey(path);
+    const value = String(getByPath(mergedData, path) ?? "");
+    const type = getSelectedFieldType(path, value);
+    const label = escapeHtml(fieldLabel(path));
+    const presentationState = getInspectorPresentationState(path);
+    const previewElement = getPreviewEditableElement(path);
+    const isAnchor = previewElement?.tagName === "A";
+    const isImageInspector = type === "image" || type === "media";
+
+    if (selectedFieldKind) {
+        selectedFieldKind.textContent = isImageInspector ? "image inspector" : "text inspector";
+    }
+    if (inspectorHint) {
+        inspectorHint.textContent = isImageInspector
+            ? "Replace the source and metadata for this visual asset."
+            : "Edit copy and preview presentation for the selected text element.";
+    }
+
+    const altPath = isImageInspector ? resolveSiblingFieldPath(section, path, ["alt", "imageAlt"]) : null;
+    const titlePath = isImageInspector ? resolveSiblingFieldPath(section, path, ["title", "imageTitle"]) : null;
+    const altValue = altPath ? String(getByPath(mergedData, altPath) ?? "") : "";
+    const titleValue = titlePath ? String(getByPath(mergedData, titlePath) ?? "") : "";
+    const listId = type === "image" ? "admin-image-assets" : type === "media" ? "admin-media-assets" : "";
+
     const previewMarkup = type === "image"
-        ? `<img src="${escapeHtml(value)}" alt="${label} preview">`
+        ? `<img src="${escapeHtml(value)}" alt="${label} preview" loading="lazy">`
         : type === "media"
             ? `<video src="${escapeHtml(value)}" muted controls preload="metadata"></video>`
             : `<p>${escapeHtml(value || "(empty text)")}</p>`;
 
-    const fileActionMarkup = type === "image" || type === "media"
-        ? `<div class="admin-selected-field__actions"><button class="button button--secondary angular-card" type="button" data-action="choose-file">Upload file</button><button class="button button--secondary angular-card" type="button" data-action="reset-field">Reset field</button><input id="admin-selected-file-input" type="file" accept="${type === "image" ? "image/*" : "video/*"}"></div>`
-        : `<div class="admin-selected-field__actions"><button class="button button--secondary angular-card" type="button" data-action="reset-field">Reset field</button></div>`;
+    if (isImageInspector) {
+        selectedFieldEditor.innerHTML = `
+            <article class="admin-selected-field__card">
+                <div class="admin-selected-field__preview">
+                    <strong>${label}</strong>
+                    ${previewMarkup}
+                    <p class="admin-selected-field__meta">Path: ${escapeHtml(key)}</p>
+                </div>
+                <div class="admin-inspector-grid">
+                    <label class="admin-inspector-control">
+                        <span>File Source</span>
+                        <input data-path="${escapeHtml(key)}" data-field-type="${escapeHtml(type)}" ${listId ? `list="${listId}"` : ""} type="text" value="${escapeHtml(value)}" placeholder="Replace source path or use upload">
+                    </label>
+                    <div class="admin-inspector-grid admin-inspector-grid--2">
+                        ${altPath ? `<label class="admin-inspector-control"><span>Alt Text</span><input data-path="${escapeHtml(pathToKey(altPath))}" type="text" value="${escapeHtml(altValue)}" placeholder="Describe the image for accessibility"></label>` : ""}
+                        ${titlePath ? `<label class="admin-inspector-control"><span>Image Title</span><input data-path="${escapeHtml(pathToKey(titlePath))}" type="text" value="${escapeHtml(titleValue)}" placeholder="Optional title attribute"></label>` : ""}
+                    </div>
+                    <div class="admin-dropzone" data-dropzone>
+                        <strong>Drag and drop image/video file</strong>
+                        <p>Drop a file here to convert and update this field immediately.</p>
+                        <div class="admin-selected-field__actions">
+                            <button class="button button--secondary angular-card" type="button" data-action="choose-file">Upload file</button>
+                            <button class="button button--secondary angular-card" type="button" data-action="reset-field">Reset field</button>
+                            <button class="button button--secondary angular-card" type="button" data-action="clear-selection">Done</button>
+                        </div>
+                        <input id="admin-selected-file-input" type="file" accept="${type === "image" ? "image/*" : "video/*"}">
+                    </div>
+                </div>
+            </article>
+        `;
+    } else {
+        const asTextArea = type === "textarea";
+        const linkTargetSelect = isAnchor
+            ? `<label class="admin-inspector-control"><span>Link Target</span><select data-action="link-target"><option value="self" ${presentationState.linkTarget === "self" ? "selected" : ""}>Same tab</option><option value="blank" ${presentationState.linkTarget === "blank" ? "selected" : ""}>New tab</option></select></label>`
+            : "";
 
-    const focusActions = selectedElement
-        ? `<div class="admin-selected-field__actions"><button class="button button--secondary angular-card admin-selected-field__back" type="button" data-action="back-overview">Back to overview</button><button class="button button--secondary angular-card" type="button" data-action="clear-selection">Exit selection</button></div>`
-        : "";
+        selectedFieldEditor.innerHTML = `
+            <article class="admin-selected-field__card">
+                <div class="admin-selected-field__preview">
+                    <strong>${label}</strong>
+                    ${previewMarkup}
+                    <p class="admin-selected-field__meta">Path: ${escapeHtml(key)}</p>
+                </div>
+                <label class="admin-inspector-control">
+                    <span>Content</span>
+                    ${asTextArea
+                        ? `<textarea data-path="${escapeHtml(key)}" data-field-type="${escapeHtml(type)}" placeholder="Update selected text">${escapeHtml(value)}</textarea>`
+                        : `<input data-path="${escapeHtml(key)}" data-field-type="${escapeHtml(type)}" type="text" value="${escapeHtml(value)}" placeholder="Update selected text">`}
+                </label>
+                <div class="admin-inspector-grid admin-inspector-grid--2">
+                    <label class="admin-inspector-control">
+                        <span>Typography</span>
+                        <div class="admin-typography-controls" role="group" aria-label="Typography controls">
+                            <button type="button" data-action="toggle-bold" class="${presentationState.bold ? "is-active" : ""}">Bold</button>
+                            <button type="button" data-action="align-left" class="${presentationState.align === "left" ? "is-active" : ""}">Left</button>
+                            <button type="button" data-action="align-center" class="${presentationState.align === "center" ? "is-active" : ""}">Center</button>
+                            <button type="button" data-action="align-right" class="${presentationState.align === "right" ? "is-active" : ""}">Right</button>
+                        </div>
+                    </label>
+                    ${linkTargetSelect}
+                </div>
+                <div class="admin-selected-field__actions">
+                    <button class="button button--secondary angular-card" type="button" data-action="reset-field">Reset field</button>
+                    <button class="button button--secondary angular-card" type="button" data-action="clear-selection">Done</button>
+                </div>
+            </article>
+        `;
+    }
 
-    const currentInput = type === "textarea"
-        ? `<textarea data-path="${escapeHtml(key)}" data-field-type="${escapeHtml(type)}">${escapeHtml(value)}</textarea>`
-        : `<input data-path="${escapeHtml(key)}" data-field-type="${escapeHtml(type)}" type="text" value="${escapeHtml(value)}">`;
-
-    selectedFieldEditor.innerHTML = `
-        <div class="admin-selected-field__preview">
-            <strong>${label}</strong>
-            ${previewMarkup}
-        </div>
-        ${focusActions}
-        <label class="admin-field__header">
-            <span data-field-kind="${escapeHtml(type)}">Edit selected content</span>
-            ${currentInput}
-        </label>
-        ${fileActionMarkup}
-    `;
-
-    const editorInput = selectedFieldEditor.querySelector("[data-path]");
-    if (editorInput) {
+    selectedFieldEditor.querySelectorAll("[data-path]").forEach((editorInput) => {
         editorInput.addEventListener("input", () => {
-            applyFieldValue(path, String(editorInput.value || ""));
+            const editorPath = keyToPath(String(editorInput.getAttribute("data-path") || ""));
+            applyFieldValue(editorPath, String(editorInput.value || ""));
             queueAutosave();
+        });
+    });
+
+    const fileInput = selectedFieldEditor.querySelector("#admin-selected-file-input");
+    const applyPickedFile = async (file) => {
+        if (!file) {
+            return;
+        }
+
+        const dataUrl = await fileToDataUrl(file);
+        applyFieldValue(path, dataUrl);
+        queueAutosave();
+        renderSelectedFieldInspector(page, section, getMergedDataset());
+    };
+
+    if (fileInput) {
+        fileInput.addEventListener("change", async () => {
+            await applyPickedFile(fileInput.files?.[0]);
         });
     }
 
-    const fileInput = selectedFieldEditor.querySelector("#admin-selected-file-input");
-    if (fileInput) {
-        fileInput.addEventListener("change", async () => {
-            const file = fileInput.files?.[0];
-            if (!file) {
-                return;
-            }
+    const dropzone = selectedFieldEditor.querySelector("[data-dropzone]");
+    if (dropzone) {
+        ["dragenter", "dragover"].forEach((eventName) => {
+            dropzone.addEventListener(eventName, (event) => {
+                event.preventDefault();
+                dropzone.classList.add("is-dragging");
+            });
+        });
 
-            const dataUrl = await fileToDataUrl(file);
-            applyFieldValue(path, dataUrl);
-            queueAutosave();
+        ["dragleave", "drop"].forEach((eventName) => {
+            dropzone.addEventListener(eventName, () => {
+                dropzone.classList.remove("is-dragging");
+            });
+        });
+
+        dropzone.addEventListener("drop", async (event) => {
+            event.preventDefault();
+            await applyPickedFile(event.dataTransfer?.files?.[0]);
         });
     }
 
     selectedFieldEditor.querySelectorAll("[data-action]").forEach((button) => {
         button.addEventListener("click", () => {
-            const action = button.getAttribute("data-action");
+            const action = String(button.getAttribute("data-action") || "");
             if (action === "choose-file") {
                 fileInput?.click();
             }
             if (action === "reset-field") {
                 revertSelectedField(path);
             }
-            if (action === "back-overview") {
-                selectedElement = null;
-                document.body.classList.remove("admin-element-focused");
-                renderPortal();
+            if (action === "toggle-bold") {
+                toggleInspectorBold(path);
+                renderSelectedFieldInspector(page, section, getMergedDataset());
+            }
+            if (action === "align-left") {
+                setInspectorAlignment(path, "left");
+                renderSelectedFieldInspector(page, section, getMergedDataset());
+            }
+            if (action === "align-center") {
+                setInspectorAlignment(path, "center");
+                renderSelectedFieldInspector(page, section, getMergedDataset());
+            }
+            if (action === "align-right") {
+                setInspectorAlignment(path, "right");
+                renderSelectedFieldInspector(page, section, getMergedDataset());
             }
             if (action === "clear-selection") {
                 clearSelectedElement();
             }
         });
     });
+
+    const linkTargetInput = selectedFieldEditor.querySelector("[data-action='link-target']");
+    if (linkTargetInput) {
+        linkTargetInput.addEventListener("change", () => {
+            setInspectorLinkTarget(path, String(linkTargetInput.value || "self"));
+        });
+    }
+
+    applyInspectorPresentation(path);
 }
 
 function fileToDataUrl(file) {
@@ -1205,17 +1475,11 @@ function fileToDataUrl(file) {
 }
 
 function applyFieldValue(path, value) {
-    const input = fieldListRoot.querySelector(`[data-path="${pathToKey(path)}"]`);
-    if (input) {
+    const fieldKey = pathToKey(path);
+    const selector = `[data-path="${CSS.escape(fieldKey)}"]`;
+    document.querySelectorAll(selector).forEach((input) => {
         input.value = value;
-    }
-
-    if (selectedFieldEditor) {
-        const editorInput = selectedFieldEditor.querySelector("[data-path]");
-        if (editorInput && editorInput !== input) {
-            editorInput.value = value;
-        }
-    }
+    });
 
     statusMessage.textContent = "Unsaved changes. Save the section when you are done.";
 }
@@ -1372,7 +1636,7 @@ function revertCurrentSection() {
 
 function renderPortal() {
     const mergedData = getMergedDataset();
-    const query = searchInput.value.trim().toLowerCase();
+    const query = String(searchInput?.value || "").trim().toLowerCase();
 
     const matchingPages = pageConfig.map((page) => ({
         ...page,
@@ -1383,13 +1647,14 @@ function renderPortal() {
         activePageId = matchingPages[0]?.id || pageConfig[0].id;
     }
 
-    const activePage = getActivePage();
+    const activePage = matchingPages.find((page) => page.id === activePageId) || getActivePage();
     if (!activePage.sections.some((section) => section.id === activeSectionId)) {
         activeSectionId = activePage.sections[0].id;
     }
 
     renderPageList(matchingPages);
     renderSectionList(activePage);
+    renderContextSelectors(matchingPages.length ? matchingPages : pageConfig, activePage);
     renderSectionWorkbench(activePage, getActiveSection(), mergedData);
 
     pageCount.textContent = `${matchingPages.length} pages`;
