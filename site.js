@@ -1,4 +1,22 @@
 const PN_CONTENT_OVERRIDES_KEY = "pnMedicalContentOverrides";
+const PN_LAYOUT_OVERRIDES_KEY = "pnMedicalLayoutOverrides";
+const PN_LAYOUT_OVERRIDES_API_PATH = "/api/layout-overrides";
+
+const DRAGGABLE_CONTAINER_SELECTORS = [
+    ".product-feature",
+    ".product-jump-link",
+    ".overview-card",
+    ".preview-link",
+    ".faq-item",
+    ".news-card",
+    ".accreditation-gallery__card",
+    ".social-feed-card",
+    ".panel-card",
+    ".callout-panel",
+    ".summary-panel",
+    ".context-visual-card",
+    "[data-admin-field]"
+];
 
 function cloneContent(value) {
     return JSON.parse(JSON.stringify(value));
@@ -44,6 +62,49 @@ function readContentOverrides() {
     } catch (_error) {
         return null;
     }
+}
+
+function readLayoutOverrides() {
+    try {
+        const stored = window.localStorage.getItem(PN_LAYOUT_OVERRIDES_KEY);
+        if (!stored) {
+            return {};
+        }
+
+        const parsed = JSON.parse(stored);
+        return parsed && typeof parsed === "object" ? parsed : {};
+    } catch (_error) {
+        return {};
+    }
+}
+
+function writeLayoutOverrides(overrides) {
+    try {
+        window.localStorage.setItem(PN_LAYOUT_OVERRIDES_KEY, JSON.stringify(overrides || {}));
+    } catch (_error) {
+        // Ignore storage write failures.
+    }
+}
+
+async function loadLayoutOverrides() {
+    try {
+        const response = await window.fetch(PN_LAYOUT_OVERRIDES_API_PATH, {
+            method: "GET",
+            cache: "no-store"
+        });
+
+        if (response.ok) {
+            const payload = await response.json();
+            if (payload && typeof payload === "object") {
+                writeLayoutOverrides(payload);
+                return payload;
+            }
+        }
+    } catch (_error) {
+        // Fall through to localStorage for file:// and offline previews.
+    }
+
+    return readLayoutOverrides();
 }
 
 const baseDataset = {
@@ -504,6 +565,119 @@ const siteDataset = mergeContent(baseDataset, readContentOverrides());
 
 const appRoot = document.querySelector("#app");
 const currentPage = document.body.dataset.page || "home";
+let runtimeLayoutOverrides = {};
+
+function domPathKey(node) {
+    const steps = [];
+    let current = node;
+    while (current && current !== document.body) {
+        const parent = current.parentElement;
+        if (!parent) {
+            break;
+        }
+
+        const index = Array.from(parent.children).indexOf(current);
+        steps.unshift(`${current.tagName.toLowerCase()}:${index}`);
+        current = parent;
+    }
+
+    return steps.join(">");
+}
+
+function annotateDraggableContainers(root = document) {
+    const candidates = Array.from(root.querySelectorAll(DRAGGABLE_CONTAINER_SELECTORS.join(",")));
+    const keyCounts = new Map();
+
+    const buildStableKey = (node, index) => {
+        const ownField = node.getAttribute("data-admin-field");
+        const nestedField = ownField ? "" : node.querySelector("[data-admin-field]")?.getAttribute("data-admin-field");
+        const classToken = String(node.className || "")
+            .trim()
+            .split(/\s+/)
+            .slice(0, 2)
+            .join(".");
+
+        let baseKey = "";
+        if (ownField) {
+            baseKey = `field:${ownField}`;
+        } else if (nestedField) {
+            baseKey = `container:${nestedField}:${node.tagName.toLowerCase()}`;
+        } else {
+            baseKey = `node:${node.tagName.toLowerCase()}:${classToken || "plain"}:${index}`;
+        }
+
+        const existingCount = keyCounts.get(baseKey) || 0;
+        keyCounts.set(baseKey, existingCount + 1);
+        return existingCount === 0 ? baseKey : `${baseKey}#${existingCount}`;
+    };
+
+    candidates.forEach((node, index) => {
+        node.setAttribute("data-layout-key", buildStableKey(node, index));
+        node.removeAttribute("data-layout-draggable");
+        node.removeAttribute("draggable");
+    });
+
+    const parentGroups = new Map();
+    candidates.forEach((node) => {
+        const parent = node.parentElement;
+        if (!parent) {
+            return;
+        }
+
+        if (!parent.getAttribute("data-layout-parent-key")) {
+            parent.setAttribute("data-layout-parent-key", `parent:${domPathKey(parent)}`);
+        }
+
+        const parentKey = String(parent.getAttribute("data-layout-parent-key") || "");
+        if (!parentKey) {
+            return;
+        }
+
+        if (!parentGroups.has(parentKey)) {
+            parentGroups.set(parentKey, []);
+        }
+        parentGroups.get(parentKey).push(node);
+    });
+
+    parentGroups.forEach((nodes) => {
+        if (nodes.length < 2) {
+            return;
+        }
+
+        nodes.forEach((node) => {
+            node.setAttribute("data-layout-draggable", "true");
+            node.setAttribute("draggable", "true");
+        });
+    });
+}
+
+function applyLayoutOverrides(root = document) {
+    const pageOverrides = runtimeLayoutOverrides[currentPage];
+    if (!pageOverrides || typeof pageOverrides !== "object") {
+        return;
+    }
+
+    Object.entries(pageOverrides).forEach(([parentKey, order]) => {
+        if (!Array.isArray(order)) {
+            return;
+        }
+
+        const parent = root.querySelector(`[data-layout-parent-key="${CSS.escape(parentKey)}"]`);
+        if (!parent) {
+            return;
+        }
+
+        const keyedChildren = Array.from(parent.children).filter((child) => child.hasAttribute("data-layout-key"));
+        const childMap = new Map(keyedChildren.map((child) => [String(child.getAttribute("data-layout-key") || ""), child]));
+
+        order.forEach((layoutKey) => {
+            const child = childMap.get(String(layoutKey));
+            if (child) {
+                parent.appendChild(child);
+            }
+        });
+    });
+}
 
 function renderApp() {
     appRoot.innerHTML = `
@@ -514,8 +688,11 @@ function renderApp() {
     `;
 
     renderProductCards("all");
+    annotateDraggableContainers(appRoot);
+    applyLayoutOverrides(appRoot);
     wireFilterBar();
     wireMobileMenu();
+    wireInquiryForm();
 }
 
 function renderPage(page) {
@@ -655,12 +832,12 @@ function renderNews(newsItems) {
 
 function renderInquiry(inquiry) {
     const contacts = inquiry.contacts.map((item, index) => `<li ${adminFieldAttrs(["inquiry", "contacts", index])}>${item}</li>`).join("");
-    return `<section class="section inquiry"><div class="container inquiry__layout"><div class="inquiry__copy angular-card"><span class="eyebrow" ${adminFieldAttrs(["inquiry", "title"])}>Procurement</span><h2 ${adminFieldAttrs(["inquiry", "title"])}>${inquiry.title}</h2><p ${adminFieldAttrs(["inquiry", "copy"])}>${inquiry.copy}</p><ul class="contact-list">${contacts}</ul></div><form class="inquiry__form angular-card"><div class="form-grid"><label><span>Name or Facility</span><input type="text" name="facility" placeholder="Hospital, clinic, or team name"></label><label><span>Email Address</span><input type="email" name="email" placeholder="procurement@example.org"></label><label><span>Inquiry Message</span><textarea name="message" placeholder="Tell PN Medical what products, quantities, or delivery details you need."></textarea></label><button class="button button--primary angular-card" type="submit">Send Inquiry Securely</button></div></form></div></section>`;
+    return `<section class="section inquiry"><div class="container inquiry__layout"><div class="inquiry__copy angular-card"><span class="eyebrow" ${adminFieldAttrs(["inquiry", "title"])}>Procurement</span><h2 ${adminFieldAttrs(["inquiry", "title"])}>${inquiry.title}</h2><p ${adminFieldAttrs(["inquiry", "copy"])}>${inquiry.copy}</p><ul class="contact-list">${contacts}</ul></div><form class="inquiry__form angular-card" novalidate><div class="form-grid"><label><span>Name or Facility</span><input type="text" name="facility" placeholder="Hospital, clinic, or team name" required></label><label><span>Email Address</span><input type="email" name="email" placeholder="procurement@example.org" required></label><label><span>Inquiry Message</span><textarea name="message" placeholder="Tell PN Medical what products, quantities, or delivery details you need." required></textarea></label><button class="button button--primary angular-card" type="submit">Send Inquiry Securely</button><p class="inquiry__status" role="status" aria-live="polite"></p></div></form></div></section>`;
 }
 
 function renderFooter(navigation) {
     const productTiles = siteDataset.products.slice(0, 6).map((product) => `<a class="site-footer__product" href="products.html"><img src="${product.imageSrc}" alt="${product.name}"><span>${product.name}</span></a>`).join("");
-    const footerLinks = navigation.map((item) => `<a class="site-footer__link" href="${item.href}">${item.label}</a>`).join("");
+    const footerLinks = navigation.map((item) => `<a href="${item.href}">${item.label}</a>`).join("");
 
     return `
         <footer class="site-footer">
@@ -699,16 +876,13 @@ function renderFooter(navigation) {
                         <li><strong>Email:</strong> <a href="mailto:${siteDataset.topBar.email}">${siteDataset.topBar.email}</a></li>
                         <li><strong>Fax:</strong> 086 599 5269</li>
                     </ul>
+                    <nav class="site-footer__nav" aria-label="Footer navigation">${footerLinks}<a href="proposal/">Proposal</a><a href="admin.html">Admin Login</a></nav>
                 </section>
-            </div>
-
-            <div class="container">
-                <nav class="site-footer__nav" aria-label="Footer navigation">${footerLinks}<a class="site-footer__link" href="proposal/">Proposal</a><a class="site-footer__link" href="admin.html">Admin Login</a></nav>
             </div>
 
             <div class="site-footer__bottom">
                 <div class="container site-footer__bottom-inner">
-                    <p class="site-footer__credit">© Copyright PN Medical (Reg# 2007/031947/07). CMS designed and developed by <img src="logos/Colourpix%20Logo.png" alt="Colourpix Web Development" class="site-footer__credit-logo"> Colourpix Web Development.</p>
+                    <p>© Copyright PN Medical (Reg# 2007/031947/07). Designed by Linchpin-PM.</p>
                     <a href="https://www.facebook.com/sanihandssa/" target="_blank" rel="noopener noreferrer" aria-label="PN Medical Facebook">f</a>
                 </div>
             </div>
@@ -737,10 +911,14 @@ function renderProductCards(activeFilter) {
     const filtered = activeFilter === "all" ? siteDataset.products : siteDataset.products.filter((product) => product.category === activeFilter);
     if (!filtered.length) {
         grid.innerHTML = '<div class="product-empty angular-card">No products matched this filter.</div>';
+        annotateDraggableContainers(appRoot || document);
+        applyLayoutOverrides(appRoot || document);
         return;
     }
 
     grid.innerHTML = filtered.map((product) => `<article class="product-card angular-card"><div class="product-card__media"><div class="product-card__media-top"><span class="product-card__tag angular-card">${product.label}</span><strong>${product.category === "dispensers" ? "Hardware" : "Consumable"}</strong></div><div class="product-card__art">${renderProductIllustration(product)}</div></div><div class="product-card__body"><h3>${product.name}</h3><p>${product.description}</p><div class="product-card__actions"><a class="button button--secondary angular-card" href="contact.html">${product.cta}</a></div></div></article>`).join("");
+    annotateDraggableContainers(appRoot || document);
+    applyLayoutOverrides(appRoot || document);
 }
 
 function wireFilterBar() {
@@ -789,5 +967,55 @@ function wireMobileMenu() {
 }
 
 if (appRoot) {
-    renderApp();
+    loadLayoutOverrides().then((overrides) => {
+        runtimeLayoutOverrides = overrides && typeof overrides === "object" ? overrides : {};
+        renderApp();
+    }).catch(() => {
+        runtimeLayoutOverrides = readLayoutOverrides();
+        renderApp();
+    });
+}
+
+function wireInquiryForm() {
+    const form = document.querySelector(".inquiry__form");
+    if (!form) {
+        return;
+    }
+
+    const statusEl = form.querySelector(".inquiry__status");
+
+    form.addEventListener("submit", (event) => {
+        event.preventDefault();
+
+        const facility = String(form.facility?.value || "").trim();
+        const email = String(form.email?.value || "").trim();
+        const message = String(form.message?.value || "").trim();
+
+        if (!facility || !email || !message) {
+            if (statusEl) {
+                statusEl.classList.remove("is-success");
+                statusEl.classList.add("is-error");
+                statusEl.textContent = "Please complete all fields before sending your inquiry.";
+            }
+            return;
+        }
+
+        const subject = encodeURIComponent(`PN Medical inquiry - ${facility}`);
+        const body = encodeURIComponent([
+            `Facility: ${facility}`,
+            `Email: ${email}`,
+            "",
+            "Inquiry:",
+            message
+        ].join("\n"));
+
+        if (statusEl) {
+            statusEl.classList.remove("is-error");
+            statusEl.classList.add("is-success");
+            statusEl.textContent = "Inquiry prepared. Your email app should open now.";
+        }
+
+        window.location.href = `mailto:${siteDataset.topBar.email}?subject=${subject}&body=${body}`;
+        form.reset();
+    });
 }

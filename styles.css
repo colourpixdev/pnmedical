@@ -1241,6 +1241,22 @@ body[data-page="contact"] {
     resize: vertical;
 }
 
+.inquiry__status {
+    min-height: 1.2rem;
+    margin: 0;
+    font-size: 0.92rem;
+    font-weight: 600;
+    letter-spacing: 0.01em;
+}
+
+.inquiry__status.is-success {
+    color: #7ef3cc;
+}
+
+.inquiry__status.is-error {
+    color: #ff9a9a;
+}
+
 .site-footer {
     padding: 4rem 0 0;
     color: rgba(255, 255, 255, 0.82);
@@ -1353,63 +1369,19 @@ body[data-page="contact"] {
 
 .site-footer__nav {
     display: flex;
+    gap: 0.9rem;
     flex-wrap: wrap;
-    align-items: center;
-    gap: 0.7rem 1.2rem;
-    padding: 1.75rem 0;
-    border-top: 1px solid rgba(255, 255, 255, 0.08);
+    margin-top: 0.5rem;
 }
 
 .site-footer__nav a {
-    position: relative;
     color: var(--white);
     font-weight: 700;
-    font-size: 0.92rem;
-    letter-spacing: 0.02em;
-    opacity: 0.86;
-    white-space: nowrap;
-    padding: 0.3rem 0;
-    transition: opacity 180ms ease;
+    opacity: 0.82;
 }
 
-.site-footer__link {
-    text-decoration: none;
-}
-
-.site-footer__nav a::before {
-    content: "";
-    position: absolute;
-    left: 0;
-    bottom: -0.1rem;
-    width: 100%;
-    height: 2px;
-    border-radius: 999px;
-    background: linear-gradient(90deg, rgba(244, 123, 32, 0.9), rgba(31, 94, 168, 0.9));
-    transform: scaleX(0);
-    transform-origin: left;
-    transition: transform 180ms ease;
-}
-
-.site-footer__nav a:hover,
-.site-footer__nav a:focus-visible {
+.site-footer__nav a:hover {
     opacity: 1;
-}
-
-.site-footer__nav a:hover::before,
-.site-footer__nav a:focus-visible::before {
-    transform: scaleX(1);
-}
-
-.site-footer__nav a:not(:last-child)::after {
-    content: "";
-    position: absolute;
-    top: 50%;
-    right: -0.65rem;
-    transform: translateY(-50%);
-    width: 3px;
-    height: 3px;
-    border-radius: 50%;
-    background: rgba(255, 255, 255, 0.35);
 }
 
 .site-footer__bottom {
@@ -1429,21 +1401,6 @@ body[data-page="contact"] {
 
 .site-footer__bottom-inner p {
     margin: 0;
-}
-
-.site-footer__credit {
-    display: flex;
-    align-items: center;
-    flex-wrap: wrap;
-    gap: 0.4rem;
-}
-
-.site-footer__credit-logo {
-    height: 1.05rem;
-    width: auto;
-    vertical-align: middle;
-    opacity: 0.72;
-    filter: grayscale(35%);
 }
 
 .site-footer__bottom-inner a {
@@ -1470,19 +1427,6 @@ body[data-page="contact"] {
 
 @media (max-width: 760px) {
     .site-footer__grid {
-
-    .site-footer__nav {
-        justify-content: flex-start;
-        gap: 0.6rem 1rem;
-    }
-
-    .site-footer__nav a {
-        font-size: 0.88rem;
-    }
-
-    .site-footer__nav a:not(:last-child)::after {
-        right: -0.5rem;
-    }
         grid-template-columns: 1fr;
     }
 
